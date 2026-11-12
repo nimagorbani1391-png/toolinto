@@ -2,7 +2,7 @@ export type Tool = {
   slug: string;
   title: string;
   description: string;
-  icon: "Link" | "QrCode" | "Calendar" | "Lock";
+  icon: "Link" | "QrCode" | "Calendar" | "Lock" | "Cake";
   href: string;
   keywords: string[];
 };
@@ -31,6 +31,14 @@ export const tools: Tool[] = [
     icon: "Calendar",
     href: "/tools/date-converter",
     keywords: ["تاریخ", "شمسی", "میلادی", "جلالی", "تقویم", "date"],
+  },
+  {
+    slug: "age-calculator",
+    title: "محاسبه‌گر سن",
+    description: "سن دقیق خود را بر اساس تاریخ شمسی یا میلادی محاسبه کنید.",
+    icon: "Cake",
+    href: "/tools/age-calculator",
+    keywords: ["سن", "تولد", "محاسبه", "age", "calculator", "تاریخ تولد"],
   },
   {
     slug: "password-generator",
