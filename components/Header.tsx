@@ -17,11 +17,8 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--glass-border)] bg-[var(--bg-main)]/70 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-5xl flex-row-reverse items-center justify-between px-4">
+      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
-          <span className="brand-gradient flex h-9 w-9 items-center justify-center rounded-xl text-lg font-black text-white shadow-lg">
-            T
-          </span>
           <span className="text-xl font-black tracking-wider text-[var(--text-main)]" dir="ltr">
             TOOLINTO
           </span>
