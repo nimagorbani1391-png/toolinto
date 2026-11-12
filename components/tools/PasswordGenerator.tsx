@@ -65,6 +65,26 @@ export default function PasswordGenerator() {
     generate();
   }, [generate]);
 
+  // محاسبه قدرت رمز عبور
+  const getStrength = () => {
+    let poolSize = 0;
+    if (options.lower) poolSize += 26;
+    if (options.upper) poolSize += 26;
+    if (options.digits) poolSize += 10;
+    if (options.symbols) poolSize += 30;
+
+    if (poolSize === 0) return { label: "هیچ", color: "bg-gray-500", width: "0%" };
+
+    const entropy = length * Math.log2(poolSize);
+    
+    if (entropy < 40) return { label: "ضعیف", color: "bg-red-500", width: "33%" };
+    if (entropy < 60) return { label: "متوسط", color: "bg-yellow-500", width: "66%" };
+    if (entropy < 80) return { label: "قوی", color: "bg-green-500", width: "100%" };
+    return { label: "بسیار قوی", color: "bg-emerald-500", width: "100%" };
+  };
+
+  const strength = getStrength();
+
   return (
     <div className="space-y-6">
       <div>
@@ -74,6 +94,7 @@ export default function PasswordGenerator() {
         >
           {password || "—"}
         </div>
+        
         <div className="mt-3 grid grid-cols-2 gap-3">
           <CopyButton text={password} />
           <button 
@@ -83,6 +104,20 @@ export default function PasswordGenerator() {
             <RefreshCw className="h-4 w-4" />
             تولید مجدد
           </button>
+        </div>
+      </div>
+
+      {/* نشانگر قدرت رمز عبور */}
+      <div>
+        <div className="mb-1 flex items-center justify-between text-sm">
+          <span className="text-slate-500 dark:text-slate-300">قدرت رمز</span>
+          <span className="font-bold text-[var(--text-main)]">{strength.label}</span>
+        </div>
+        <div className="h-2 overflow-hidden rounded-full bg-black/20 dark:bg-white/10">
+          <div
+            className={`h-full rounded-full transition-all duration-300 ${strength.color}`}
+            style={{ width: strength.width }}
+          />
         </div>
       </div>
 
@@ -122,4 +157,4 @@ export default function PasswordGenerator() {
       </div>
     </div>
   );
-}
+            }
