@@ -1,4 +1,4 @@
-import ToolSearch from "@/components/ToolSearch";
+import ToolSearch from "../components/ToolSearch";
 
 export default function HomePage() {
   return (
@@ -8,7 +8,7 @@ export default function HomePage() {
           ابزارهای کوچک، برای کارهای روزمره
         </h1>
         <p className="mx-auto mt-3 max-w-lg text-sm text-slate-600 dark:text-slate-300 sm:text-base">
-          سریع، رایگان و بدون نیاز به ثبت‌نام. ابزار مورد نظرت رو انتخاب کن.
+          بدون ثبت نام ، بدون دردسر و با بیشترین سرعت از ابزار ها استفاده کنید!
         </p>
       </section>
 
