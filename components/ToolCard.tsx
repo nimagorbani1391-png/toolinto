@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Link as LinkIcon, QrCode, Calendar, Lock, Cake, HelpCircle } from "lucide-react";
+import { Link as LinkIcon, QrCode, Calendar, Lock, Cake, Image as ImageIcon, HelpCircle } from "lucide-react";
 import type { Tool } from "../lib/tools";
 
 const IconMap: Record<string, React.ElementType> = {
@@ -8,6 +8,7 @@ const IconMap: Record<string, React.ElementType> = {
   Calendar: Calendar,
   Lock: Lock,
   Cake: Cake,
+  Image: ImageIcon,
 };
 
 export default function ToolCard({ tool }: { tool: Tool }) {
