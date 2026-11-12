@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import ToolCard from "@/components/ToolCard";
-import { tools } from "@/lib/tools";
+import ToolCard from "./ToolCard";
+import { tools } from "../lib/tools";
 import { Search } from "lucide-react";
 
 const normalize = (s: string) =>
