@@ -2,7 +2,7 @@ export type Tool = {
   slug: string;
   title: string;
   description: string;
-  icon: "Link" | "QrCode" | "Calendar" | "Lock" | "Cake";
+  icon: "Link" | "QrCode" | "Calendar" | "Lock" | "Cake" | "Image";
   href: string;
   keywords: string[];
 };
@@ -23,6 +23,14 @@ export const tools: Tool[] = [
     icon: "QrCode",
     href: "/tools/qr-generator",
     keywords: ["qr", "کیو آر", "کد", "بارکد", "qrcode"],
+  },
+  {
+    slug: "image-compressor",
+    title: "فشرده‌ساز عکس",
+    description: "حجم عکس‌های خود را بدون افت کیفیت به شدت کاهش دهید.",
+    icon: "Image",
+    href: "/tools/image-compressor",
+    keywords: ["فشرده سازی", "عکس", "تصویر", "حجم", "compress", "image", "کاهش حجم"],
   },
   {
     slug: "date-converter",
