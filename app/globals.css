@@ -21,7 +21,7 @@ html {
 }
 
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-vazirmatn), system-ui, -apple-system, sans-serif;
   color: var(--text-main);
   background-color: var(--bg-main);
   background-image: 
