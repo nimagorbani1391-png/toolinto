@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Link as LinkIcon, QrCode, Calendar, Lock, HelpCircle } from "lucide-react";
-import type { Tool } from "@/lib/tools";
+import type { Tool } from "../lib/tools";
 
 const IconMap: Record<string, React.ElementType> = {
   Link: LinkIcon,
