@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Vazirmatn } from "next/font/google";
 import "./globals.css";
 import Header from "../components/Header";
+import PwaRegister from "../components/PwaRegister";
 
 const vazirmatn = Vazirmatn({
   subsets: ["arabic", "latin"],
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "TOOLINTO | ابزارهای کوچک و کاربردی",
     description: "سریع، رایگان و بدون نیاز به ثبت‌نام. ابزار مورد نظرت رو انتخاب کن.",
-    url: "https://toolinto.netlify.app",
+    url: "https://toolinto.vercel.app",
     siteName: "TOOLINTO",
     locale: "fa_IR",
     type: "website",
@@ -38,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" className={`dark ${vazirmatn.variable}`}>
       <body className="flex min-h-screen flex-col antialiased">
+        <PwaRegister />
         <Header />
         <main className="flex-1">{children}</main>
       </body>
