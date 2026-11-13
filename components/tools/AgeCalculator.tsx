@@ -127,7 +127,6 @@ export default function AgeCalculator() {
         </p>
       )}
 
-      {/* اینجا تغییر اصلی انجام شده است: بررسی وجود totalDays */}
       {result && "totalDays" in result && (
         <div className="space-y-4 pt-2">
           <div className="rounded-xl border border-violet-400/60 bg-violet-500/10 p-5 text-center">
@@ -140,7 +139,7 @@ export default function AgeCalculator() {
           <div className="rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] p-4 text-center">
             <p className="text-sm text-slate-500 dark:text-slate-400">تعداد کل روزهایی که زندگی کرده‌اید</p>
             <p dir="ltr" className="mt-1 text-lg font-bold text-violet-500">
-              {result.totalDays.toLocaleString("fa-IR")} روز
+              {(result.totalDays || 0).toLocaleString("fa-IR")} روز
             </p>
           </div>
         </div>
