@@ -127,7 +127,8 @@ export default function AgeCalculator() {
         </p>
       )}
 
-      {result && "years" in result && (
+      {/* اینجا تغییر اصلی انجام شده است: بررسی وجود totalDays */}
+      {result && "totalDays" in result && (
         <div className="space-y-4 pt-2">
           <div className="rounded-xl border border-violet-400/60 bg-violet-500/10 p-5 text-center">
             <p className="text-sm text-slate-500 dark:text-slate-300">سن دقیق شما</p>
