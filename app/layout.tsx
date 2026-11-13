@@ -10,8 +10,26 @@ const vazirmatn = Vazirmatn({
 });
 
 export const metadata: Metadata = {
+  verification: {
+    google: "hpWvmi9hBvnLrzOn00ScS87_PXkSJ31S5wIPLFjwYGU",
+  },
   title: "TOOLINTO | ابزارهای کوچک و کاربردی",
-  description: "مجموعه ابزارهای کوچک و رایگان: کوتاه‌کننده لینک، سازنده QR کد، تبدیل تاریخ و سازنده رمز عبور.",
+  description: "مجموعه ابزارهای کوچک و رایگان: کوتاه‌کننده لینک، سازنده QR کد، تبدیل تاریخ، محاسبه BMI و ۱۰ ابزار کاربردی دیگر.",
+  keywords: ["ابزار آنلاین", "کوتاه کننده لینک", "سازنده QR کد", "تبدیل تاریخ", "محاسبه BMI", "TOOLINTO"],
+  authors: [{ name: "Nima" }],
+  openGraph: {
+    title: "TOOLINTO | ابزارهای کوچک و کاربردی",
+    description: "سریع، رایگان و بدون نیاز به ثبت‌نام. ابزار مورد نظرت رو انتخاب کن.",
+    url: "https://toolinto.netlify.app",
+    siteName: "TOOLINTO",
+    locale: "fa_IR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TOOLINTO | ابزارهای کوچک و کاربردی",
+    description: "سریع، رایگان و بدون نیاز به ثبت‌نام. ابزار مورد نظرت رو انتخاب کن.",
+  },
 };
 
 export default function RootLayout({
