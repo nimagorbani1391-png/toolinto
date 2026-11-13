@@ -1,0 +1,40 @@
+name: Build PWA to APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install Bubblewrap CLI
+        run: npm i -g @bubblewrap/cli
+
+      - name: Initialize and Build PWA
+        run: |
+          mkdir apk-build
+          cd apk-build
+          bubblewrap init --manifest="https://toolinto.onrender.com/manifest.webmanifest" --directory=./ --yes
+          bubblewrap build --skipPwaValidation
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Toolinto-APK
+          path: apk-build/app-release-signed.apk
