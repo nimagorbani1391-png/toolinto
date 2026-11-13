@@ -67,7 +67,7 @@ export default function DateDifference() {
       years: duration.years || 0,
       months: duration.months || 0,
       days: duration.days || 0,
-      totalDays,
+      totalDays: totalDays,
     };
   }, [startMode, endMode, sy, sm, sd, ey, em, ed]);
 
@@ -138,18 +138,18 @@ export default function DateDifference() {
           <div className="rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] p-6 text-center">
             <p className="text-sm text-slate-500 dark:text-slate-400">فاصله دقیق بین دو تاریخ</p>
             <p className="mt-3 text-2xl font-black text-[var(--text-main)]">
-              {result.years} سال، {result.months} ماه و {result.days} روز
+              {(result.years || 0)} سال، {(result.months || 0)} ماه و {(result.days || 0)} روز
             </p>
           </div>
           
           <div className="rounded-xl border border-violet-400/60 bg-violet-500/10 p-4 text-center">
             <p className="text-sm text-slate-500 dark:text-violet-200">تعداد کل روزها</p>
             <p dir="ltr" className="mt-1 text-xl font-bold text-violet-500 dark:text-violet-400">
-              {result.totalDays.toLocaleString("fa-IR")} روز
+              {(result.totalDays || 0).toLocaleString("fa-IR")} روز
             </p>
           </div>
         </div>
       )}
     </div>
   );
-      }
+}
