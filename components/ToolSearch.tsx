@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import ToolCard from "@/components/ToolCard";
-import { inputCls } from "@/components/ui";
-import { tools } from "@/lib/tools";
+import ToolCard from "./ToolCard";
+import { inputCls } from "./ui";
+import { tools } from "../lib/tools";
 import { Search } from "lucide-react";
-import ScrollReveal from "@/components/ScrollReveal";
+import ScrollReveal from "./ScrollReveal";
 
 const normalize = (s: string) =>
   s.toLowerCase().replace(/ي/g, "ی").replace(/ك/g, "ک").trim();
@@ -43,7 +43,6 @@ export default function ToolSearch() {
       {filtered.length > 0 ? (
         <div className="mx-auto grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:gap-6">
           {filtered.map((tool, index) => (
-            // هر کارت با یک تاخیر کوچیک بر اساس ایندکسش ظاهر میشه
             <div key={tool.slug} style={{ transitionDelay: `${index * 50}ms` }}>
               <ScrollReveal>
                 <ToolCard tool={tool} />
