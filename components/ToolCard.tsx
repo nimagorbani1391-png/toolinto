@@ -1,57 +1,22 @@
 import Link from "next/link";
-import { 
-  Link as LinkIcon, 
-  QrCode, 
-  Calendar, 
-  Lock, 
-  Cake, 
-  Image as ImageIcon, 
-  FileText,
-  RefreshCw,
-  FileImage,
-  Palette,
-  CalendarDays,
-  Activity,
-  Dices,
-  Timer,
-  Volume2,
-  HelpCircle 
-} from "lucide-react";
+import * as Icons from "lucide-react";
 import type { Tool } from "../lib/tools";
 
-const IconMap: Record<string, React.ElementType> = {
-  Link: LinkIcon,
-  QrCode: QrCode,
-  Calendar: Calendar,
-  Lock: Lock,
-  Cake: Cake,
-  Image: ImageIcon,
-  FileText: FileText,
-  RefreshCw: RefreshCw,
-  FileImage: FileImage,
-  Palette: Palette,
-  CalendarDays: CalendarDays,
-  Activity: Activity,
-  Dices: Dices,
-  Timer: Timer,
-  Volume2: Volume2,
-};
-
 export default function ToolCard({ tool }: { tool: Tool }) {
-  const IconComponent = IconMap[tool.icon] || HelpCircle;
+  const IconComponent = (Icons as any)[tool.icon] || Icons.HelpCircle;
 
   return (
     <Link
       href={tool.href}
-      className="group relative flex flex-col items-center justify-center gap-4 overflow-hidden rounded-[2rem] border border-[var(--glass-border)] bg-[var(--glass-bg)] p-6 text-center backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-slate-300 dark:hover:border-white/20 hover:shadow-2xl hover:shadow-violet-500/20"
+      className="group relative flex flex-col items-center justify-center gap-1.5 overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] p-2 text-center backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-violet-400/50 hover:shadow-lg hover:shadow-violet-500/20 sm:gap-3 sm:rounded-[2rem] sm:p-6"
     >
-      <div className="absolute inset-0 z-0 bg-gradient-to-br from-violet-500/0 via-transparent to-cyan-500/0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:from-violet-500/10 group-hover:to-cyan-500/10" />
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-violet-500/0 via-transparent to-cyan-500/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:from-violet-500/10 group-hover:to-cyan-500/10" />
       
-      <span className="brand-gradient relative z-10 flex h-16 w-16 items-center justify-center rounded-2xl shadow-inner transition-transform duration-500 group-hover:scale-110 group-hover:shadow-lg">
-        <IconComponent className="h-8 w-8 text-white/90 transition-colors group-hover:text-white" strokeWidth={1.5} />
+      <span className="brand-gradient relative z-10 flex h-10 w-10 items-center justify-center rounded-xl shadow-inner transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16 sm:rounded-2xl">
+        <IconComponent className="h-5 w-5 text-white/90 sm:h-8 sm:w-8" strokeWidth={1.5} />
       </span>
       
-      <h2 className="relative z-10 text-sm font-bold tracking-wide text-slate-800 transition-colors group-hover:text-black dark:text-slate-200 dark:group-hover:text-white sm:text-base">
+      <h2 className="relative z-10 text-[10px] font-bold tracking-tight text-slate-800 transition-colors group-hover:text-black dark:text-slate-200 dark:group-hover:text-white sm:text-sm sm:tracking-wide">
         {tool.title}
       </h2>
     </Link>
