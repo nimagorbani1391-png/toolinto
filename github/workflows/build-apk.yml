@@ -30,7 +30,6 @@ jobs:
         run: |
           mkdir apk-build
           cd apk-build
-          # این دستور مستقیماً از سایت زنده تو فایل تنظیمات رو می‌خونه
           bubblewrap init --manifest="https://toolinto.onrender.com/manifest.webmanifest" --directory=./ --yes
           bubblewrap build --skipPwaValidation
 
