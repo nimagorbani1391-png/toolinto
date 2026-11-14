@@ -9,9 +9,9 @@ type PriceData = {
   gbp: number;
   try: number;
   gold18: number;
+  updatedAt?: string;
 };
 
-// قیمت‌های واقعی امروز به عنوان پشتیبان (در صورتی که API قطع باشد)
 const FALLBACK_DATA: PriceData = {
   usd: 269840,
   eur: 297630,
@@ -31,24 +31,15 @@ export default function CurrencyPrice() {
     setError("");
 
     try {
-      // استفاده از API رایگان و بدون کلید
-      const response = await fetch("https://nerkh.jahankhahan.shop/data/live.json");
+      // درخواست به API داخلی خودمون (بدون مشکل CORS)
+      const response = await fetch("/api/rates");
       if (!response.ok) throw new Error("Failed to fetch");
 
       const data = await response.json();
       
-      // استخراج داده‌ها
-      setPrices({
-        usd: data.rates.dollar || FALLBACK_DATA.usd,
-        eur: data.rates.euro || FALLBACK_DATA.eur,
-        gbp: data.rates.pound || FALLBACK_DATA.gbp,
-        try: data.rates.lira || FALLBACK_DATA.try,
-        gold18: data.rates.gold || FALLBACK_DATA.gold18,
-      });
-
-      setLastUpdated(data.time || new Date().toLocaleTimeString("fa-IR"));
+      setPrices(data);
+      setLastUpdated(data.updatedAt || new Date().toLocaleTimeString("fa-IR"));
     } catch (err) {
-      // اگر API قطع بود، از قیمت‌های پشتیبان استفاده می‌کنیم
       setPrices(FALLBACK_DATA);
       setError("خطا در دریافت اطلاعات زنده؛ نمایش آخرین نرخ‌های معتبر بازار.");
     } finally {
@@ -60,9 +51,7 @@ export default function CurrencyPrice() {
     fetchPrices();
   }, []);
 
-  const formatPrice = (price: number) => {
-    return price.toLocaleString("fa-IR");
-  };
+  const formatPrice = (price: number) => price.toLocaleString("fa-IR");
 
   const cards = [
     { title: "دلار آمریکا", key: "usd", icon: DollarSign, color: "text-green-500", bg: "bg-green-500/10" },
