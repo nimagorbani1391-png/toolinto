@@ -11,6 +11,7 @@ export type Tool = {
 export const tools: Tool[] = [
   // --- ابزارهای فعلی ---
   { slug: "url-shortener", title: "کوتاه‌کننده لینک", description: "لینک‌های بلند را کوتاه کن.", icon: "Link", category: "utility", href: "/tools/url-shortener", keywords: ["لینک"] },
+  { slug: "utm-builder", title: "سازنده لینک UTM", description: "لینک‌های ردیابی تبلیغات بساز.", icon: "Link2", category: "social", href: "/tools/utm-builder", keywords: ["utm", "تبلیغات", "آنالیتیکس", "ردیابی"] },
   { slug: "qr-generator", title: "سازنده QR کد", description: "QR کد بساز و دانلود کن.", icon: "QrCode", category: "utility", href: "/tools/qr-generator", keywords: ["qr"] },
   { slug: "image-compressor", title: "فشرده‌ساز عکس", description: "کاهش حجم عکس.", icon: "Image", category: "image", href: "/tools/image-compressor", keywords: ["فشرده"] },
   { slug: "image-converter", title: "تبدیل فرمت عکس", description: "PNG, JPG, WebP", icon: "RefreshCw", category: "image", href: "/tools/image-converter", keywords: ["تبدیل"] },
@@ -25,9 +26,7 @@ export const tools: Tool[] = [
   { slug: "password-generator", title: "سازنده رمز عبور", description: "رمز قوی و تصادفی", icon: "Lock", category: "utility", href: "/tools/password-generator", keywords: ["رمز"] },
   { slug: "bmi-calculator", title: "محاسبه BMI", description: "شاخص توده بدنی", icon: "Activity", category: "utility", href: "/tools/bmi-calculator", keywords: ["وزن"] },
   { slug: "random-number", title: "عدد تصادفی", description: "تولید عدد شانسی", icon: "Dices", category: "utility", href: "/tools/random-number", keywords: ["عدد"] },
-
-  // --- ابزارهای جدید (طبق سفارش تو) ---
-  { slug: "fancy-text", title: "فونت متن", description: "استایل‌های خاص برای بیو", icon: "Type", category: "social", href: "/tools/fancy-text", keywords: ["بیو", "فونت", "متن فانتزی"] },
+  { slug: "fancy-text", title: "فونت متن", description: "فونت‌های خاص برای بیو", icon: "Type", category: "social", href: "/tools/fancy-text", keywords: ["بیو", "فونت"] },
   { slug: "image-resizer", title: "تغییر سایز عکس", description: "تنظیم ابعاد عکس", icon: "Maximize", category: "image", href: "/tools/image-resizer", keywords: ["سایز"] },
   { slug: "pomodoro", title: "تایمر پومودورو", description: "تمرکز ۲۵ دقیقه‌ای", icon: "Clock", category: "utility", href: "/tools/pomodoro", keywords: ["تمرکز"] },
   { slug: "typing-test", title: "تست سرعت تایپ", description: "سرعت تایپ خود را بسنجید", icon: "Keyboard", category: "utility", href: "/tools/typing-test", keywords: ["تایپ"] },
