@@ -19,5 +19,6 @@ model User {
   email     String   @unique
   password  String
   name      String?
+  isVip     Boolean  @default(false)
   createdAt DateTime @default(now())
 }
