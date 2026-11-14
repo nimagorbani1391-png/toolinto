@@ -31,24 +31,24 @@ export default function CurrencyPrice() {
     setError("");
 
     try {
-      // استفاده از API ایرانی برای دریافت نرخ‌های واقعی بازار آزاد
-      const response = await fetch("https://api.navasan.net/api/latest");
+      // استفاده از API رایگان و بدون کلید
+      const response = await fetch("https://nerkh.jahankhahan.shop/data/live.json");
       if (!response.ok) throw new Error("Failed to fetch");
 
       const data = await response.json();
       
-      // استخراج داده‌ها (اگر API در دسترس بود)
+      // استخراج داده‌ها
       setPrices({
-        usd: data.usd || FALLBACK_DATA.usd,
-        eur: data.eur || FALLBACK_DATA.eur,
-        gbp: data.gbp || FALLBACK_DATA.gbp,
-        try: data.try || FALLBACK_DATA.try,
-        gold18: data.gold18 || FALLBACK_DATA.gold18,
+        usd: data.rates.dollar || FALLBACK_DATA.usd,
+        eur: data.rates.euro || FALLBACK_DATA.eur,
+        gbp: data.rates.pound || FALLBACK_DATA.gbp,
+        try: data.rates.lira || FALLBACK_DATA.try,
+        gold18: data.rates.gold || FALLBACK_DATA.gold18,
       });
 
-      setLastUpdated(new Date().toLocaleTimeString("fa-IR"));
+      setLastUpdated(data.time || new Date().toLocaleTimeString("fa-IR"));
     } catch (err) {
-      // اگر API قطع بود، از قیمت‌های پشتیبان استفاده می‌کنیم تا صفحه خالی نمونه
+      // اگر API قطع بود، از قیمت‌های پشتیبان استفاده می‌کنیم
       setPrices(FALLBACK_DATA);
       setError("خطا در دریافت اطلاعات زنده؛ نمایش آخرین نرخ‌های معتبر بازار.");
     } finally {
