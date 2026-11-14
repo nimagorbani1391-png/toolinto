@@ -1,12 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { Moon, Sun, Menu, X, User, MessageCircle, Crown, Sparkles } from "lucide-react";
+import { Moon, Sun, Menu, X, User, MessageCircle, Crown, Sparkles, LogOut, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
+  const router = useRouter();
   const [isDark, setIsDark] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // چک کردن وضعیت لاگین کاربر
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        setUser(data.user);
+        setIsLoading(false);
+      })
+      .catch(() => setIsLoading(false));
+  }, []);
 
   useEffect(() => {
     if (isDark) {
@@ -15,6 +30,14 @@ export default function Header() {
       document.documentElement.classList.remove("dark");
     }
   }, [isDark]);
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    setUser(null);
+    setIsMenuOpen(false);
+    router.push("/");
+    router.refresh();
+  };
 
   return (
     <>
@@ -58,11 +81,29 @@ export default function Header() {
             </div>
 
             <nav className="flex flex-col gap-3">
-              {/* این دکمه حالا مستقیم به آدرس کامل میره */}
-              <a href="https://toolinto.onrender.com/login" className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
-                <User className="h-5 w-5 text-violet-500" />
-                <span className="font-bold text-sm">ثبت نام / ورود</span>
-              </a>
+              {isLoading ? (
+                <div className="flex justify-center p-4">
+                  <Loader2 className="h-6 w-6 animate-spin text-violet-500" />
+                </div>
+              ) : user ? (
+                // اگر کاربر لاگین کرده باشد
+                <>
+                  <div className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-violet-500/30 bg-violet-500/10 text-right">
+                    <User className="h-5 w-5 text-violet-500" />
+                    <span className="font-bold text-sm">سلام، {user.name}!</span>
+                  </div>
+                  <button onClick={handleLogout} className="flex items-center gap-3 text-red-500 p-3.5 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition text-right">
+                    <LogOut className="h-5 w-5" />
+                    <span className="font-bold text-sm">خروج از حساب</span>
+                  </button>
+                </>
+              ) : (
+                // اگر کاربر لاگین نکرده باشد
+                <Link href="/login" className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
+                  <User className="h-5 w-5 text-violet-500" />
+                  <span className="font-bold text-sm">ثبت نام / ورود</span>
+                </Link>
+              )}
               
               <a href="https://rubika.ir/IM_NIMA_GORBANI" target="_blank" rel="noreferrer" className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
                 <MessageCircle className="h-5 w-5 text-cyan-500" />
