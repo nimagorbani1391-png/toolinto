@@ -10,16 +10,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'ایمیل و رمز عبور الزامی است.' }, { status: 400 });
     }
 
-    // چک کردن اینکه کاربر قبلا ثبت‌نام نکرده باشه
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json({ error: 'این ایمیل قبلاً ثبت‌نام کرده است.' }, { status: 400 });
     }
 
-    // رمزنگاری پسورد
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ذخیره در دیتابیس
     const user = await prisma.user.create({
       data: { name, email, password: hashedPassword },
     });
