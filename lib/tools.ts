@@ -32,7 +32,6 @@ export const tools: Tool[] = [
   { slug: "pomodoro", title: "تایمر پومودورو", description: "تمرکز ۲۵ دقیقه‌ای", icon: "Clock", category: "utility", href: "/tools/pomodoro", keywords: ["تمرکز"] },
   { slug: "typing-test", title: "تست سرعت تایپ", description: "سرعت تایپ خود را بسنجید", icon: "Keyboard", category: "utility", href: "/tools/typing-test", keywords: ["تایپ"] },
   { slug: "wheel-of-fortune", title: "گردونه شانس", description: "انتخاب تصادفی", icon: "RotateCw", category: "social", href: "/tools/wheel-of-fortune", keywords: ["قرعه"] },
-  { slug: "currency-price", title: "قیمت ارز و طلا", description: "نرخ لحظه‌ای دلار و...", icon: "DollarSign", category: "utility", href: "/tools/currency-price", keywords: ["دلار", "طلا"] },
   { slug: "persian-calendar", title: "تقویم پارسی", description: "تقویم ماهانه شمسی", icon: "CalendarCheck", category: "datetime", href: "/tools/persian-calendar", keywords: ["تقویم"] },
   { slug: "translator", title: "مترجم آنلاین", description: "ترجمه فارسی و انگلیسی", icon: "Languages", category: "text", href: "/tools/translator", keywords: ["ترجمه"] },
 ];
