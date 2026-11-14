@@ -8,14 +8,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'متنی برای ترجمه وارد نشده است.' }, { status: 400 });
     }
 
-    // استفاده از API رایگان MyMemory
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`;
+    // استفاده از API غیررسمی گوگل ترنسلیت (رایگان و بدون کلید)
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
     
     const response = await fetch(url);
     const data = await response.json();
 
-    if (data.responseStatus === 200) {
-      return NextResponse.json({ translatedText: data.responseData.translatedText });
+    // ساختار خروجی گوگل یک آرایه پیچیده است، اینطوری متن نهایی رو درمیاریم
+    if (data && data[0]) {
+      const translatedText = data[0].map((item: any) => item[0]).join('');
+      return NextResponse.json({ translatedText });
     } else {
       return NextResponse.json({ error: 'خطا در ترجمه متن.' }, { status: 500 });
     }
