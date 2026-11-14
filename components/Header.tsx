@@ -58,10 +58,11 @@ export default function Header() {
             </div>
 
             <nav className="flex flex-col gap-3">
-              <button className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
+              {/* این دکمه حالا مستقیم به آدرس کامل میره */}
+              <a href="https://toolinto.onrender.com/login" className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
                 <User className="h-5 w-5 text-violet-500" />
                 <span className="font-bold text-sm">ثبت نام / ورود</span>
-              </button>
+              </a>
               
               <a href="https://rubika.ir/IM_NIMA_GORBANI" target="_blank" rel="noreferrer" className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
                 <MessageCircle className="h-5 w-5 text-cyan-500" />
