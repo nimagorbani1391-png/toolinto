@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",
+    "@travisvn/edge-tts": "^1.0.6",
     "browser-image-compression": "^2.0.2",
     "date-fns-jalali": "3.6.0-1",
     "jspdf": "^2.5.1",
