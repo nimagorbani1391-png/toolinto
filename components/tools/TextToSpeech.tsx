@@ -1,99 +1,116 @@
 "use client";
 
-import { useState } from "react";
-import { Play, Square, Download, Loader2, Volume2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Play, Square, Volume2, Loader2 } from "lucide-react";
 
 export default function TextToSpeech() {
   const [text, setText] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [lang, setLang] = useState("fa-IR");
   const [error, setError] = useState("");
-  const [voice, setVoice] = useState("fa-IR-DilaraNeural");
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
-  const handleGenerate = async () => {
+  useEffect(() => {
+    // لود کردن صداهای موجود در مرورگر کاربر
+    const loadVoices = () => {
+      const availableVoices = window.speechSynthesis.getVoices();
+      setVoices(availableVoices);
+    };
+    
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  const handleSpeak = () => {
     if (!text.trim()) return;
-    setIsGenerating(true);
+    
     setError("");
-    setAudioUrl(null);
+    window.speechSynthesis.cancel();
 
-    try {
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, voice }),
-      });
-
-      if (!response.ok) {
-        throw new Error('خطا در تولید صدا');
-      }
-
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      setAudioUrl(url);
-    } catch (err) {
-      setError("خطایی رخ داد. لطفاً دوباره تلاش کنید.");
-    } finally {
-      setIsGenerating(false);
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    
+    // پیدا کردن صدای مناسب زبان انتخاب شده
+    const targetVoice = voices.find(v => v.lang.includes(lang));
+    if (targetVoice) {
+      utterance.voice = targetVoice;
     }
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = (e) => {
+      setIsSpeaking(false);
+      if (e.error !== "interrupted") {
+        setError("مرورگر شما از این زبان پشتیبانی نمی‌کند یا صدایی برای آن نصب نشده است.");
+      }
+    };
+
+    window.speechSynthesis.speak(utterance);
   };
 
-  const stopAudio = () => {
-    if (audioUrl) {
-      URL.revokeObjectURL(audioUrl);
-      setAudioUrl(null);
-    }
+  const handleStop = () => {
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
   };
 
   return (
     <div className="space-y-6">
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <label className="text-sm text-slate-500 dark:text-slate-300">متن خود را وارد کنید</label>
-        <select
-          value={voice}
-          onChange={(e) => setVoice(e.target.value)}
-          className="rounded-lg border border-[var(--card-border)] bg-[var(--card-bg)] px-3 py-1 text-sm text-[var(--text-main)] outline-none focus:border-violet-400"
-        >
-          <option value="fa-IR-DilaraNeural">صدای زنانه (دلارا)</option>
-          <option value="fa-IR-FaridNeural">صدای مردانه (فرید)</option>
-        </select>
+      <div>
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <label className="text-sm text-slate-500 dark:text-slate-300">
+            متن خود را وارد کنید
+          </label>
+          <div className="flex rounded-lg border border-[var(--card-border)] bg-[var(--card-bg)] p-1">
+            <button
+              onClick={() => { setLang("fa-IR"); handleStop(); }}
+              className={`rounded-md px-3 py-1 text-sm font-medium transition ${
+                lang === "fa-IR" ? "bg-violet-500/20 text-violet-500" : "text-slate-500 hover:text-[var(--text-main)]"
+              }`}
+            >
+              فارسی
+            </button>
+            <button
+              onClick={() => { setLang("en-US"); handleStop(); }}
+              className={`rounded-md px-3 py-1 text-sm font-medium transition ${
+                lang === "en-US" ? "bg-violet-500/20 text-violet-500" : "text-slate-500 hover:text-[var(--text-main)]"
+              }`}
+            >
+              انگلیسی
+            </button>
+          </div>
+        </div>
+
+        <textarea
+          rows={6}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="متنی که می‌خواهید خوانده شود را اینجا بنویسید..."
+          className="w-full resize-y rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] px-4 py-3 text-[var(--text-main)] outline-none focus:border-violet-400"
+        />
       </div>
 
-      <textarea
-        rows={6}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="متنی که می‌خواهید خوانده شود را اینجا بنویسید..."
-        className="w-full resize-y rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] px-4 py-3 text-[var(--text-main)] outline-none focus:border-violet-400"
-      />
-
       <div className="flex gap-3">
-        {!audioUrl ? (
+        {!isSpeaking ? (
           <button
-            onClick={handleGenerate}
-            disabled={isGenerating || !text.trim()}
+            onClick={handleSpeak}
+            disabled={!text.trim()}
             className="brand-gradient flex flex-1 items-center justify-center gap-2 rounded-xl px-5 py-3 font-bold text-white transition hover:brightness-110 disabled:opacity-50"
           >
-            {isGenerating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Play className="h-5 w-5" />}
-            {isGenerating ? "در حال تولید..." : "تبدیل به صدا"}
+            <Play className="h-5 w-5" />
+            پخش صدا
           </button>
         ) : (
-          <>
-            <a
-              href={audioUrl}
-              download="toolinto-speech.mp3"
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-600 px-5 py-3 font-bold text-white transition hover:bg-green-700"
-            >
-              <Download className="h-5 w-5" />
-              دانلود فایل صوتی
-            </a>
-            <button
-              onClick={stopAudio}
-              className="flex items-center justify-center gap-2 rounded-xl bg-red-500 px-5 py-3 font-bold text-white transition hover:bg-red-600"
-            >
-              <Square className="h-5 w-5" />
-              توقف
-            </button>
-          </>
+          <button
+            onClick={handleStop}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-500 px-5 py-3 font-bold text-white transition hover:bg-red-600"
+          >
+            <Square className="h-5 w-5" />
+            توقف
+          </button>
         )}
       </div>
 
@@ -103,14 +120,10 @@ export default function TextToSpeech() {
         </p>
       )}
 
-      {audioUrl && (
-        <audio controls autoPlay src={audioUrl} className="w-full" />
-      )}
-
       <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-4 text-sm text-slate-500 dark:text-slate-400">
         <p className="flex items-center gap-2">
           <Volume2 className="h-4 w-4 shrink-0" />
-          نکته: کیفیت صدا در این روش بسیار بالا و طبیعی است و توسط هوش مصنوعی مایکروسافت تولید می‌شود.
+          نکته: کیفیت و وجود صدای فارسی به مرورگر و سیستم‌عامل شما بستگی دارد. برای بهترین نتیجه از مرورگر کروم استفاده کنید.
         </p>
       </div>
     </div>
