@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, ArrowRight } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -28,8 +28,7 @@ export default function RegisterPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      // بعد از ثبت‌نام موفق، برو به صفحه ورود
-      router.push("/login?registered=true");
+      router.push("/login");
     } catch (err: any) {
       setError(err.message || "خطایی رخ داد.");
     } finally {
