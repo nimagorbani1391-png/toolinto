@@ -27,9 +27,8 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      // بعد از ورود موفق، برو به صفحه اصلی
       router.push("/");
-      router.refresh(); // برای آپدیت هدر
+      router.refresh(); 
     } catch (err: any) {
       setError(err.message || "خطایی رخ داد.");
     } finally {
