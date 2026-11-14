@@ -27,7 +27,7 @@ export const tools: Tool[] = [
   { slug: "random-number", title: "عدد تصادفی", description: "تولید عدد شانسی", icon: "Dices", category: "utility", href: "/tools/random-number", keywords: ["عدد"] },
 
   // --- ابزارهای جدید (طبق سفارش تو) ---
-  { slug: "fancy-text", title: "متن فانتزی", description: "فونت‌های خاص برای بیو", icon: "Type", category: "social", href: "/tools/fancy-text", keywords: ["بیو", "فونت"] },
+  { slug: "fancy-text", title: "فونت متن", description: "استایل‌های خاص برای بیو", icon: "Type", category: "social", href: "/tools/fancy-text", keywords: ["بیو", "فونت", "متن فانتزی"] },
   { slug: "image-resizer", title: "تغییر سایز عکس", description: "تنظیم ابعاد عکس", icon: "Maximize", category: "image", href: "/tools/image-resizer", keywords: ["سایز"] },
   { slug: "pomodoro", title: "تایمر پومودورو", description: "تمرکز ۲۵ دقیقه‌ای", icon: "Clock", category: "utility", href: "/tools/pomodoro", keywords: ["تمرکز"] },
   { slug: "typing-test", title: "تست سرعت تایپ", description: "سرعت تایپ خود را بسنجید", icon: "Keyboard", category: "utility", href: "/tools/typing-test", keywords: ["تایپ"] },
