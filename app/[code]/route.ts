@@ -19,5 +19,11 @@ export async function GET(
     return NextResponse.redirect(new URL("/", _req.url));
   }
 
+  // آپدیت کردن تعداد کلیک‌ها (ویژه VIP)
+  await prisma.link.update({
+    where: { shortCode: code },
+    data: { clicks: { increment: 1 } },
+  });
+
   return NextResponse.redirect(link.originalUrl, 302);
 }
