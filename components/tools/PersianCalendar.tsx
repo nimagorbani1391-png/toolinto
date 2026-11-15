@@ -19,19 +19,22 @@ export default function PersianCalendar() {
 
   useEffect(() => {
     const updateTime = () => {
-      // گرفتن زمان دقیق ایران به صورت رشته میلادی
-      const tehranDateStr = new Date().toLocaleString("en-US", { timeZone: "Asia/Tehran" });
-      const tehranDate = new Date(tehranDateStr);
-
-      // زمان به فرمت فارسی
+      const now = new Date();
+      
+      // گرفتن زمان دقیق ایران با استفاده از Intl
       const timeStr = new Intl.DateTimeFormat("fa-IR", {
         hour: "2-digit",
         minute: "2-digit",
-        second: "2-digit"
-      }).format(tehranDate);
+        second: "2-digit",
+        timeZone: "Asia/Tehran"
+      }).format(now);
       setIranTime(timeStr);
 
-      // تاریخ امروز به صورت رشته برای مقایسه و نمایش
+      // گرفتن تاریخ دقیق ایران به میلادی (برای مقایسه در گرید)
+      const tehranDateStr = now.toLocaleString("en-US", { timeZone: "Asia/Tehran" });
+      const tehranDate = new Date(tehranDateStr);
+      
+      // تبدیل به تاریخ شمسی
       setTodayJalaliStr(format(tehranDate, "yyyy/MM/dd"));
     };
 
@@ -59,10 +62,11 @@ export default function PersianCalendar() {
   const emptyDays = Array.from({ length: startingDayOfWeek }, (_, i) => i);
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  // استخراج متن کامل تاریخ امروز
-  const todayText = todayJalaliStr ? new Intl.DateTimeFormat("fa-IR-u-ca-persian", { 
-    dateStyle: "full" 
-  }).format(parse(todayJalaliStr, "yyyy/MM/dd", new Date())) : "";
+  // گرفتن مستقیم متن تاریخ امروز با تایم‌زون تهران (بدون خطای محاسباتی)
+  const todayText = new Intl.DateTimeFormat("fa-IR-u-ca-persian", { 
+    dateStyle: "full", 
+    timeZone: "Asia/Tehran" 
+  }).format(new Date());
 
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
@@ -120,4 +124,4 @@ export default function PersianCalendar() {
       </p>
     </div>
   );
-}
+                }
