@@ -15,23 +15,24 @@ import { ChevronRight, ChevronLeft, Calendar as CalendarIcon, Clock } from "luci
 export default function PersianCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [iranTime, setIranTime] = useState("");
-  const [tick, setTick] = useState(0); // برای اجبار به رندر مجدد موقع عوض شدن تاریخ
+  const [todayJalaliStr, setTodayJalaliStr] = useState("");
 
   useEffect(() => {
     const updateTime = () => {
-      const now = new Date();
-      
-      // گرفتن ساعت دقیق ایران
+      // گرفتن زمان دقیق ایران به صورت رشته میلادی
+      const tehranDateStr = new Date().toLocaleString("en-US", { timeZone: "Asia/Tehran" });
+      const tehranDate = new Date(tehranDateStr);
+
+      // زمان به فرمت فارسی
       const timeStr = new Intl.DateTimeFormat("fa-IR", {
-        timeZone: "Asia/Tehran",
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit"
-      }).format(now);
+      }).format(tehranDate);
       setIranTime(timeStr);
-      
-      // یک تیک می‌زنیم که هر ثانیه چک کنه اگه تاریخ عوض شد، تقویم آپدیت بشه
-      setTick(prev => prev + 1);
+
+      // تاریخ امروز به صورت رشته برای مقایسه و نمایش
+      setTodayJalaliStr(format(tehranDate, "yyyy/MM/dd"));
     };
 
     updateTime();
@@ -45,7 +46,6 @@ export default function PersianCalendar() {
   const daysInMonth = getDaysInMonth(currentDate);
   const firstDayOfMonth = startOfMonth(currentDate);
   
-  // تنظیم روز شروع ماه (شنبه = 0)
   const startingDayOfWeek = (getDay(firstDayOfMonth) + 1) % 7;
 
   const monthYearTitle = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
@@ -56,18 +56,17 @@ export default function PersianCalendar() {
   const jalaliYear = format(currentDate, "yyyy");
   const jalaliMonth = format(currentDate, "MM");
 
-  // گرفتن تاریخ دقیق امروز ایران به صورت رشته شمسی برای مقایسه
-  const iranTodayJalali = new Intl.DateTimeFormat("en-US-u-ca-persian", { 
-    year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Tehran" 
-  }).format(new Date()).replace(/\//g, "/"); 
-
   const emptyDays = Array.from({ length: startingDayOfWeek }, (_, i) => i);
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+  // استخراج متن کامل تاریخ امروز
+  const todayText = todayJalaliStr ? new Intl.DateTimeFormat("fa-IR-u-ca-persian", { 
+    dateStyle: "full" 
+  }).format(parse(todayJalaliStr, "yyyy/MM/dd", new Date())) : "";
 
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
       
-      {/* ساعت زنده ایران */}
       <div className="flex items-center justify-center gap-2 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] p-3">
         <Clock className="h-5 w-5 text-emerald-500 animate-pulse" />
         <span className="font-mono text-lg font-black text-[var(--text-main)]" dir="ltr">
@@ -98,7 +97,7 @@ export default function PersianCalendar() {
           {days.map((day) => {
             const dateObj = parse(`${jalaliYear}/${jalaliMonth}/${day}`, "yyyy/MM/dd", new Date());
             const dayJalaliStr = format(dateObj, "yyyy/MM/dd");
-            const isTodayDate = iranTodayJalali === dayJalaliStr;
+            const isTodayDate = todayJalaliStr === dayJalaliStr;
 
             return (
               <div
@@ -117,7 +116,7 @@ export default function PersianCalendar() {
       </div>
       
       <p className="text-center text-xs text-slate-500">
-        امروز: {new Intl.DateTimeFormat("fa-IR-u-ca-persian", { dateStyle: "full", timeZone: "Asia/Tehran" }).format(new Date())}
+        امروز: {todayText}
       </p>
     </div>
   );
