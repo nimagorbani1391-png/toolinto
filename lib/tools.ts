@@ -12,6 +12,7 @@ export const tools: Tool[] = [
   // --- ابزارهای فعلی ---
   { slug: "url-shortener", title: "کوتاه‌کننده لینک", description: "لینک‌های بلند را کوتاه کن.", icon: "Link", category: "utility", href: "/tools/url-shortener", keywords: ["لینک"] },
   { slug: "utm-builder", title: "سازنده لینک UTM", description: "لینک‌های ردیابی تبلیغات بساز.", icon: "Link2", category: "social", href: "/tools/utm-builder", keywords: ["utm", "تبلیغات", "آنالیتیکس", "ردیابی"] },
+  { slug: "resume-builder", title: "رزومه‌ساز حرفه‌ای", description: "رزومه مدرن و PDF بساز.", icon: "FileText", category: "utility", href: "/tools/resume-builder", keywords: ["رزومه", "cv", "کار", "استخدام"] },
   { slug: "qr-generator", title: "سازنده QR کد", description: "QR کد بساز و دانلود کن.", icon: "QrCode", category: "utility", href: "/tools/qr-generator", keywords: ["qr"] },
   { slug: "image-compressor", title: "فشرده‌ساز عکس", description: "کاهش حجم عکس.", icon: "Image", category: "image", href: "/tools/image-compressor", keywords: ["فشرده"] },
   { slug: "image-converter", title: "تبدیل فرمت عکس", description: "PNG, JPG, WebP", icon: "RefreshCw", category: "image", href: "/tools/image-converter", keywords: ["تبدیل"] },
