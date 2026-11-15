@@ -9,11 +9,11 @@ export type Tool = {
 };
 
 export const tools: Tool[] = [
-  // --- ابزارهای فعلی ---
+  // --- ابزارهای فعلی (بدون تغییر) ---
   { slug: "url-shortener", title: "کوتاه‌کننده لینک", description: "لینک‌های بلند را کوتاه کن.", icon: "Link", category: "utility", href: "/tools/url-shortener", keywords: ["لینک"] },
-  { slug: "utm-builder", title: "سازنده لینک UTM", description: "لینک‌های ردیابی تبلیغات بساز.", icon: "Link2", category: "social", href: "/tools/utm-builder", keywords: ["utm", "تبلیغات", "آنالیتیکس", "ردیابی"] },
-  { slug: "resume-builder", title: "رزومه‌ساز حرفه‌ای", description: "رزومه مدرن و PDF بساز.", icon: "FileText", category: "utility", href: "/tools/resume-builder", keywords: ["رزومه", "cv", "کار"] },
-  { slug: "qr-generator", title: "سازنده QR کد", description: "QR کد بساز و دانلود کن.", icon: "QrCode", category: "utility", href: "/tools/qr-generator", keywords: ["qr"] },
+  { slug: "utm-builder", title: "سازنده لینک UTM", description: "لینک‌های ردیابی تبلیغات بساز.", icon: "Link2", category: "social", href: "/tools/utm-builder", keywords: ["utm"] },
+  { slug: "resume-builder", title: "رزومه‌ساز حرفه‌ای", description: "رزومه مدرن و PDF بساز.", icon: "FileText", category: "utility", href: "/tools/resume-builder", keywords: ["رزومه"] },
+  { slug: "qr-generator", title: "سازنده QR کد", description: "QR کد بساز.", icon: "QrCode", category: "utility", href: "/tools/qr-generator", keywords: ["qr"] },
   { slug: "image-compressor", title: "فشرده‌ساز عکس", description: "کاهش حجم عکس.", icon: "Image", category: "image", href: "/tools/image-compressor", keywords: ["فشرده"] },
   { slug: "image-converter", title: "تبدیل فرمت عکس", description: "PNG, JPG, WebP", icon: "RefreshCw", category: "image", href: "/tools/image-converter", keywords: ["تبدیل"] },
   { slug: "image-to-pdf", title: "تبدیل عکس به PDF", description: "عکس‌ها را PDF کن.", icon: "FileImage", category: "image", href: "/tools/image-to-pdf", keywords: ["pdf"] },
@@ -27,17 +27,18 @@ export const tools: Tool[] = [
   { slug: "password-generator", title: "سازنده رمز عبور", description: "رمز قوی و تصادفی", icon: "Lock", category: "utility", href: "/tools/password-generator", keywords: ["رمز"] },
   { slug: "bmi-calculator", title: "محاسبه BMI", description: "شاخص توده بدنی", icon: "Activity", category: "utility", href: "/tools/bmi-calculator", keywords: ["وزن"] },
   { slug: "random-number", title: "عدد تصادفی", description: "تولید عدد شانسی", icon: "Dices", category: "utility", href: "/tools/random-number", keywords: ["عدد"] },
-  { slug: "fancy-text", title: "فونت متن", description: "فونت‌های خاص برای بیو", icon: "Type", category: "social", href: "/tools/fancy-text", keywords: ["بیو", "فونت"] },
+  { slug: "fancy-text", title: "فونت متن", description: "فونت‌های خاص برای بیو", icon: "Type", category: "social", href: "/tools/fancy-text", keywords: ["بیو"] },
   { slug: "image-resizer", title: "تغییر سایز عکس", description: "تنظیم ابعاد عکس", icon: "Maximize", category: "image", href: "/tools/image-resizer", keywords: ["سایز"] },
   { slug: "pomodoro", title: "تایمر پومودورو", description: "تمرکز ۲۵ دقیقه‌ای", icon: "Clock", category: "utility", href: "/tools/pomodoro", keywords: ["تمرکز"] },
   { slug: "typing-test", title: "تست سرعت تایپ", description: "سرعت تایپ خود را بسنجید", icon: "Keyboard", category: "utility", href: "/tools/typing-test", keywords: ["تایپ"] },
   { slug: "wheel-of-fortune", title: "گردونه شانس", description: "انتخاب تصادفی", icon: "RotateCw", category: "social", href: "/tools/wheel-of-fortune", keywords: ["قرعه"] },
   { slug: "persian-calendar", title: "تقویم پارسی", description: "تقویم ماهانه شمسی", icon: "CalendarCheck", category: "datetime", href: "/tools/persian-calendar", keywords: ["تقویم"] },
   { slug: "translator", title: "مترجم آنلاین", description: "ترجمه فارسی و انگلیسی", icon: "Languages", category: "text", href: "/tools/translator", keywords: ["ترجمه"] },
+  { slug: "memory-test", title: "تست حافظه تصویری", description: "جفت کارت‌های یکسان را پیدا کن", icon: "Brain", category: "social", href: "/tools/memory-test", keywords: ["حافظه"] },
+  { slug: "reaction-test", title: "تست سرعت واکنش", description: "سرعت عکس‌العمل خود را بسنجید", icon: "Zap", category: "social", href: "/tools/reaction-test", keywords: ["واکنش"] },
   
-  // --- ابزارهای جدید ---
-  { slug: "memory-test", title: "تست حافظه تصویری", description: "جفت کارت‌های یکسان را پیدا کن", icon: "Brain", category: "social", href: "/tools/memory-test", keywords: ["حافظه", "بازی", "کارت", "ذهن"] },
-  { slug: "reaction-test", title: "تست سرعت واکنش", description: "سرعت عکس‌العمل خود را بسنجید", icon: "Zap", category: "social", href: "/tools/reaction-test", keywords: ["واکنش", "سرعت", "بازی", "کلیک"] },
+  // --- ابزار جدید ---
+  { slug: "rock-paper-scissors", title: "سنگ کاغذ قیچی", description: "بازی کلاسیک با کامپیوتر", icon: "Scissors", category: "social", href: "/tools/rock-paper-scissors", keywords: ["بازی", "سنگ", "کاغذ", "قیچی"] },
 ];
 
 export function getTool(slug: string): Tool {
