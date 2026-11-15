@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Link2, Copy, Check, Crown, Lock, Loader2, BarChart3, ExternalLink } from "lucide-react";
+import { Link2, Copy, Check, Crown, Lock, Loader2, BarChart3, ExternalLink, AlertCircle } from "lucide-react";
 
 export default function UtmBuilder() {
   const [baseUrl, setBaseUrl] = useState("");
@@ -12,19 +12,20 @@ export default function UtmBuilder() {
   const [isVip, setIsVip] = useState(false);
   const [isLoadingVip, setIsLoadingVip] = useState(true);
   
-  // استیت‌های مربوط به VIP
   const [shortenedUrl, setShortenedUrl] = useState("");
   const [shortCode, setShortCode] = useState("");
   const [clicks, setClicks] = useState(0);
   const [isShortening, setIsShortening] = useState(false);
+  const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    // چک کردن وضعیت VIP کاربر
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => {
-        if (data.user) setIsVip(true); // فعلاً برای تست، هر کسی لاگین کنه VIP در نظر گرفته میشه
+        if (data.user && data.user.isVip) {
+          setIsVip(true);
+        }
         setIsLoadingVip(false);
       })
       .catch(() => setIsLoadingVip(false));
@@ -51,8 +52,12 @@ export default function UtmBuilder() {
   };
 
   const handleCreateTrackableLink = async () => {
-    if (!generatedUrl || generatedUrl === "لینک نامعتبر است...") return;
+    if (!generatedUrl || generatedUrl === "لینک نامعتبر است...") {
+      setError("لطفاً ابتدا آدرس سایت را به درستی وارد کنید.");
+      return;
+    }
     setIsShortening(true);
+    setError("");
 
     try {
       const res = await fetch("/api/shorten", {
@@ -61,13 +66,16 @@ export default function UtmBuilder() {
         body: JSON.stringify({ url: generatedUrl }),
       });
       const data = await res.json();
+      
       if (res.ok) {
         setShortCode(data.shortCode);
         setShortenedUrl(`${window.location.origin}/${data.shortCode}`);
-        setClicks(data.clicks);
+        setClicks(data.clicks || 0); // اگر دیتابیس کلیک نداشت، صفر بذار
+      } else {
+        setError(data.error || "خطایی در ساخت لینک رخ داد.");
       }
     } catch (err) {
-      console.error(err);
+      setError("ارتباط با سرور برقرار نشد.");
     } finally {
       setIsShortening(false);
     }
@@ -128,7 +136,6 @@ export default function UtmBuilder() {
           {isLoadingVip ? (
             <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin text-yellow-500" /></div>
           ) : !isVip ? (
-            // حالت قفل برای کاربران عادی
             <div className="flex flex-col items-center justify-center p-6 text-center opacity-70">
               <Lock className="h-12 w-12 text-yellow-500 mb-3" />
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
@@ -137,12 +144,18 @@ export default function UtmBuilder() {
               <button className="rounded-xl bg-yellow-500 px-6 py-2 text-sm font-bold text-black hover:bg-yellow-400">ارتقا به VIP</button>
             </div>
           ) : (
-            // حالت باز برای کاربران VIP
             <div className="space-y-4">
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 با کلیک روی دکمه زیر، لینک UTM شما به یک لینک کوتاه قابل ردیابی تبدیل می‌شود.
               </p>
               
+              {error && (
+                <div className="flex items-center gap-2 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-500">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  {error}
+                </div>
+              )}
+
               {!shortenedUrl ? (
                 <button onClick={handleCreateTrackableLink} disabled={isShortening || !generatedUrl} className="flex w-full items-center justify-center gap-2 rounded-xl bg-yellow-500 px-5 py-3 font-bold text-black transition hover:bg-yellow-400 disabled:opacity-50">
                   {isShortening ? <Loader2 className="h-5 w-5 animate-spin" /> : <Link2 className="h-5 w-5" />}
