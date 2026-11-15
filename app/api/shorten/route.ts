@@ -62,6 +62,7 @@ export async function POST(req: Request) {
           id: link.id,
           shortCode: link.shortCode,
           originalUrl: link.originalUrl,
+          clicks: link.clicks,
         },
         { status: 201 }
       );
