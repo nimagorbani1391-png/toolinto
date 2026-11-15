@@ -9,7 +9,6 @@ export type Tool = {
 };
 
 export const tools: Tool[] = [
-  // --- ابزارهای فعلی (بدون تغییر) ---
   { slug: "url-shortener", title: "کوتاه‌کننده لینک", description: "لینک‌های بلند را کوتاه کن.", icon: "Link", category: "utility", href: "/tools/url-shortener", keywords: ["لینک"] },
   { slug: "utm-builder", title: "سازنده لینک UTM", description: "لینک‌های ردیابی تبلیغات بساز.", icon: "Link2", category: "social", href: "/tools/utm-builder", keywords: ["utm"] },
   { slug: "resume-builder", title: "رزومه‌ساز حرفه‌ای", description: "رزومه مدرن و PDF بساز.", icon: "FileText", category: "utility", href: "/tools/resume-builder", keywords: ["رزومه"] },
@@ -17,6 +16,7 @@ export const tools: Tool[] = [
   { slug: "image-compressor", title: "فشرده‌ساز عکس", description: "کاهش حجم عکس.", icon: "Image", category: "image", href: "/tools/image-compressor", keywords: ["فشرده"] },
   { slug: "image-converter", title: "تبدیل فرمت عکس", description: "PNG, JPG, WebP", icon: "RefreshCw", category: "image", href: "/tools/image-converter", keywords: ["تبدیل"] },
   { slug: "image-to-pdf", title: "تبدیل عکس به PDF", description: "عکس‌ها را PDF کن.", icon: "FileImage", category: "image", href: "/tools/image-to-pdf", keywords: ["pdf"] },
+  { slug: "text-to-pdf", title: "تبدیل متن به PDF", description: "متن خود را PDF کن.", icon: "FileText", category: "text", href: "/tools/text-to-pdf", keywords: ["متن به پی دی اف", "pdf", "تایپ"] },
   { slug: "color-picker", title: "انتخاب رنگ", description: "کد رنگ از عکس بگیر.", icon: "Palette", category: "image", href: "/tools/color-picker", keywords: ["رنگ"] },
   { slug: "date-converter", title: "تبدیل تاریخ", description: "شمسی و میلادی", icon: "Calendar", category: "datetime", href: "/tools/date-converter", keywords: ["تاریخ"] },
   { slug: "date-difference", title: "اختلاف دو تاریخ", description: "فاصله بین دو تاریخ", icon: "CalendarDays", category: "datetime", href: "/tools/date-difference", keywords: ["فاصله"] },
@@ -36,8 +36,6 @@ export const tools: Tool[] = [
   { slug: "translator", title: "مترجم آنلاین", description: "ترجمه فارسی و انگلیسی", icon: "Languages", category: "text", href: "/tools/translator", keywords: ["ترجمه"] },
   { slug: "memory-test", title: "تست حافظه تصویری", description: "جفت کارت‌های یکسان را پیدا کن", icon: "Brain", category: "social", href: "/tools/memory-test", keywords: ["حافظه"] },
   { slug: "reaction-test", title: "تست سرعت واکنش", description: "سرعت عکس‌العمل خود را بسنجید", icon: "Zap", category: "social", href: "/tools/reaction-test", keywords: ["واکنش"] },
-  
-  // --- ابزار جدید ---
   { slug: "rock-paper-scissors", title: "سنگ کاغذ قیچی", description: "بازی کلاسیک با کامپیوتر", icon: "Scissors", category: "social", href: "/tools/rock-paper-scissors", keywords: ["بازی", "سنگ", "کاغذ", "قیچی"] },
 ];
 
