@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Moon, Sun, Menu, X, User, MessageCircle, Crown, Sparkles, LogOut, Loader2, Code2, ChevronDown } from "lucide-react";
+import { Moon, Sun, Menu, X, User, MessageCircle, Crown, Sparkles, LogOut, Loader2, Code2, ChevronDown, LayoutDashboard } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -9,17 +9,14 @@ export default function Header() {
   const router = useRouter();
   const [isDark, setIsDark] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<{ name: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; isVip: boolean } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showFaq, setShowFaq] = useState(false);
 
   useEffect(() => {
     fetch("/api/auth/me")
       .then((res) => res.json())
-      .then((data) => {
-        setUser(data.user);
-        setIsLoading(false);
-      })
+      .then((data) => { setUser(data.user); setIsLoading(false); })
       .catch(() => setIsLoading(false));
   }, []);
 
@@ -74,7 +71,14 @@ export default function Header() {
                   <div className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-violet-500/30 bg-violet-500/10 text-right">
                     <User className="h-5 w-5 text-violet-500" />
                     <span className="font-bold text-sm">سلام، {user.name}!</span>
+                    {user.isVip && <span className="mr-auto rounded bg-yellow-500 px-2 py-0.5 text-[10px] font-black text-black">VIP</span>}
                   </div>
+                  
+                  <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
+                    <LayoutDashboard className="h-5 w-5 text-emerald-500" />
+                    <span className="font-bold text-sm">پنل کاربری (لینک‌های من)</span>
+                  </Link>
+
                   <button onClick={handleLogout} className="flex items-center gap-3 text-red-500 p-3.5 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition text-right">
                     <LogOut className="h-5 w-5" /><span className="font-bold text-sm">خروج از حساب</span>
                   </button>
@@ -88,46 +92,37 @@ export default function Header() {
               <a href="https://rubika.ir/IM_NIMA_GORBANI" target="_blank" rel="noreferrer" className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
                 <MessageCircle className="h-5 w-5 text-cyan-500" /><span className="font-bold text-sm">ارتباط با پشتیبانی</span>
               </a>
-
-              <Link href="/api-docs" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
-                <Code2 className="h-5 w-5 text-orange-500" /><span className="font-bold text-sm">دسترسی به API</span>
-              </Link>
             </nav>
 
-            <div className="mt-6 overflow-hidden rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 to-orange-500/5 p-4 relative">
-              <h3 className="text-sm font-black text-yellow-500 mb-1 flex items-center gap-1.5">
-                <Sparkles className="h-4 w-4" /> اشتراک ویژه (VIP)
-              </h3>
-              <p className="text-[11px] leading-5 text-slate-500 dark:text-slate-400 mb-3">
-                دسترسی نامحدود به تمامی ابزارها، ساخت لینک اختصاصی و آمار بازدید.
-              </p>
-              <button className="w-full rounded-lg bg-yellow-500 py-2 text-xs font-bold text-black transition hover:bg-yellow-400">
-                خرید اشتراک
-              </button>
-            </div>
+            {/* اگر کاربر VIP نبود، بنر خرید اشتراک را نشان بده */}
+            {(!user || !user.isVip) && (
+              <div className="mt-6 overflow-hidden rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 to-orange-500/5 p-4 relative">
+                <h3 className="text-sm font-black text-yellow-500 mb-1 flex items-center gap-1.5">
+                  <Sparkles className="h-4 w-4" /> اشتراک ویژه (VIP)
+                </h3>
+                <p className="text-[11px] leading-5 text-slate-500 dark:text-slate-400 mb-3">
+                  دسترسی نامحدود به تمامی ابزارها، ساخت لینک اختصاصی و آمار بازدید.
+                </p>
+                <button className="w-full rounded-lg bg-yellow-500 py-2 text-xs font-bold text-black transition hover:bg-yellow-400">
+                  خرید اشتراک
+                </button>
+              </div>
+            )}
 
-            {/* بخش سوالات متداول (FAQ) */}
             <div className="mt-6 border-t border-[var(--card-border)] pt-4">
               <button onClick={() => setShowFaq(!showFaq)} className="flex w-full items-center justify-between text-sm font-bold text-[var(--text-main)]">
-                سوالات متداول
-                <ChevronDown className={`h-4 w-4 transition-transform ${showFaq ? "rotate-180" : ""}`} />
+                سوالات متداول <ChevronDown className={`h-4 w-4 transition-transform ${showFaq ? "rotate-180" : ""}`} />
               </button>
-              
               {showFaq && (
                 <div className="mt-3 space-y-3 text-xs leading-6 text-slate-500 dark:text-slate-400 animate-in fade-in">
-                  <p><strong>آیا ابزارها رایگان هستند؟</strong><br/>بله، تمام ابزارهای پایه کاملاً رایگان و بدون نیاز به ثبت‌نام هستند.</p>
-                  <p><strong>اشتراک VIP چه مزایایی دارد؟</strong><br/>پردازش نامحدود فایل‌ها، ساخت لینک کوتاه اختصاصی و مشاهده آمار دقیق بازدید.</p>
-                  <p><strong>آیا اطلاعات من امن است؟</strong><br/>بله، پردازش‌ها در مرورگر شما انجام می‌شود و پسوردها به صورت رمزنگاری شده ذخیره می‌شوند.</p>
+                  <p><strong>آیا ابزارها رایگان هستند؟</strong><br/>بله، ابزارهای پایه رایگان هستند.</p>
+                  <p><strong>اشتراک VIP چه مزایایی دارد؟</strong><br/>پردازش نامحدود، ساخت لینک اختصاصی و مشاهده آمار.</p>
                 </div>
               )}
-            </div>
-
-            <div className="mt-auto pt-8 pb-4 text-center">
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">سازنده : NimaGorbani</p>
             </div>
           </div>
         </div>
       )}
     </>
   );
-              }
+}
