@@ -1,22 +1,14 @@
 "use client";
 
-import { useState, type FormEvent, useEffect } from "react";
-import { Loader2, Lock, Crown, Link as LinkIcon } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { Loader2 } from "lucide-react";
 import CopyButton from "../CopyButton";
 
 export default function UrlShortener() {
   const [url, setUrl] = useState("");
-  const [customSlug, setCustomSlug] = useState("");
   const [shortUrl, setShortUrl] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isVip, setIsVip] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/auth/me").then(res => res.json()).then(data => {
-      if (data.user && data.user.isVip) setIsVip(true);
-    });
-  }, []);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,7 +20,7 @@ export default function UrlShortener() {
       const res = await fetch("/api/shorten", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, customSlug: isVip ? customSlug : undefined }),
+        body: JSON.stringify({ url }),
       });
       const data = await res.json().catch(() => ({}));
 
@@ -61,35 +53,6 @@ export default function UrlShortener() {
             placeholder="https://example.com/very/long/link"
             className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] px-4 py-3 text-[var(--text-main)] outline-none focus:border-violet-400"
           />
-        </div>
-
-        {/* بخش لینک اختصاصی */}
-        <div className={`relative rounded-xl border p-4 overflow-hidden ${isVip ? "border-green-500/30 bg-green-500/5" : "border-yellow-500/20 bg-yellow-500/5"}`}>
-          <div className={`absolute top-0 right-0 text-black text-[10px] font-bold px-2 py-0.5 rounded-bl-lg flex items-center gap-1 ${isVip ? "bg-green-500 text-white" : "bg-yellow-500"}`}>
-            <Crown className="h-3 w-3" /> VIP
-          </div>
-          <label className={`mb-2 block text-sm font-bold ${isVip ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-500"}`}>
-            لینک اختصاصی خودت رو بساز
-          </label>
-          <div className={`flex gap-2 ${!isVip ? "opacity-60" : ""}`}>
-            <span className="flex items-center bg-black/20 px-3 rounded-xl border border-[var(--card-border)] text-sm text-slate-500" dir="ltr">
-              toolinto.ir/
-            </span>
-            <input
-              type="text"
-              value={customSlug}
-              onChange={(e) => setCustomSlug(e.target.value)}
-              disabled={!isVip}
-              placeholder="اسم-دلخواه (مثلاً nima)"
-              dir="ltr"
-              className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] px-4 py-3 text-[var(--text-main)] outline-none focus:border-violet-400 disabled:cursor-not-allowed"
-            />
-            {!isVip && (
-              <div className="flex items-center justify-center px-4 rounded-xl bg-black/20 border border-[var(--card-border)] cursor-not-allowed">
-                <Lock className="h-5 w-5 text-slate-500" />
-              </div>
-            )}
-          </div>
         </div>
 
         <button
