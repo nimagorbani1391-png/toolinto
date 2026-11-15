@@ -12,7 +12,7 @@ export const tools: Tool[] = [
   // --- ابزارهای فعلی ---
   { slug: "url-shortener", title: "کوتاه‌کننده لینک", description: "لینک‌های بلند را کوتاه کن.", icon: "Link", category: "utility", href: "/tools/url-shortener", keywords: ["لینک"] },
   { slug: "utm-builder", title: "سازنده لینک UTM", description: "لینک‌های ردیابی تبلیغات بساز.", icon: "Link2", category: "social", href: "/tools/utm-builder", keywords: ["utm", "تبلیغات", "آنالیتیکس", "ردیابی"] },
-  { slug: "resume-builder", title: "رزومه‌ساز حرفه‌ای", description: "رزومه مدرن و PDF بساز.", icon: "FileText", category: "utility", href: "/tools/resume-builder", keywords: ["رزومه", "cv", "کار", "استخدام"] },
+  { slug: "resume-builder", title: "رزومه‌ساز حرفه‌ای", description: "رزومه مدرن و PDF بساز.", icon: "FileText", category: "utility", href: "/tools/resume-builder", keywords: ["رزومه", "cv", "کار"] },
   { slug: "qr-generator", title: "سازنده QR کد", description: "QR کد بساز و دانلود کن.", icon: "QrCode", category: "utility", href: "/tools/qr-generator", keywords: ["qr"] },
   { slug: "image-compressor", title: "فشرده‌ساز عکس", description: "کاهش حجم عکس.", icon: "Image", category: "image", href: "/tools/image-compressor", keywords: ["فشرده"] },
   { slug: "image-converter", title: "تبدیل فرمت عکس", description: "PNG, JPG, WebP", icon: "RefreshCw", category: "image", href: "/tools/image-converter", keywords: ["تبدیل"] },
@@ -34,6 +34,9 @@ export const tools: Tool[] = [
   { slug: "wheel-of-fortune", title: "گردونه شانس", description: "انتخاب تصادفی", icon: "RotateCw", category: "social", href: "/tools/wheel-of-fortune", keywords: ["قرعه"] },
   { slug: "persian-calendar", title: "تقویم پارسی", description: "تقویم ماهانه شمسی", icon: "CalendarCheck", category: "datetime", href: "/tools/persian-calendar", keywords: ["تقویم"] },
   { slug: "translator", title: "مترجم آنلاین", description: "ترجمه فارسی و انگلیسی", icon: "Languages", category: "text", href: "/tools/translator", keywords: ["ترجمه"] },
+  
+  // --- ابزارهای جدید ---
+  { slug: "memory-test", title: "تست حافظه تصویری", description: "جفت کارت‌های یکسان را پیدا کن", icon: "Brain", category: "social", href: "/tools/memory-test", keywords: ["حافظه", "بازی", "کارت", "ذهن"] },
 ];
 
 export function getTool(slug: string): Tool {
