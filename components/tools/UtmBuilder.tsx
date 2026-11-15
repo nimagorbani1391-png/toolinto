@@ -1,35 +1,14 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { Link2, Copy, Check, Crown, Lock, Loader2, BarChart3, ExternalLink, AlertCircle } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Copy, Check } from "lucide-react";
 
 export default function UtmBuilder() {
   const [baseUrl, setBaseUrl] = useState("");
   const [source, setSource] = useState("");
   const [medium, setMedium] = useState("");
   const [campaign, setCampaign] = useState("");
-  
-  const [isVip, setIsVip] = useState(false);
-  const [isLoadingVip, setIsLoadingVip] = useState(true);
-  
-  const [shortenedUrl, setShortenedUrl] = useState("");
-  const [shortCode, setShortCode] = useState("");
-  const [clicks, setClicks] = useState(0);
-  const [isShortening, setIsShortening] = useState(false);
-  const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/auth/me")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user && data.user.isVip) {
-          setIsVip(true);
-        }
-        setIsLoadingVip(false);
-      })
-      .catch(() => setIsLoadingVip(false));
-  }, []);
 
   const generatedUrl = useMemo(() => {
     if (!baseUrl.trim()) return "";
@@ -49,36 +28,6 @@ export default function UtmBuilder() {
     navigator.clipboard.writeText(generatedUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleCreateTrackableLink = async () => {
-    if (!generatedUrl || generatedUrl === "لینک نامعتبر است...") {
-      setError("لطفاً ابتدا آدرس سایت را به درستی وارد کنید.");
-      return;
-    }
-    setIsShortening(true);
-    setError("");
-
-    try {
-      const res = await fetch("/api/shorten", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: generatedUrl }),
-      });
-      const data = await res.json();
-      
-      if (res.ok) {
-        setShortCode(data.shortCode);
-        setShortenedUrl(`${window.location.origin}/${data.shortCode}`);
-        setClicks(data.clicks || 0); // اگر دیتابیس کلیک نداشت، صفر بذار
-      } else {
-        setError(data.error || "خطایی در ساخت لینک رخ داد.");
-      }
-    } catch (err) {
-      setError("ارتباط با سرور برقرار نشد.");
-    } finally {
-      setIsShortening(false);
-    }
   };
 
   return (
@@ -120,65 +69,6 @@ export default function UtmBuilder() {
           </div>
         </div>
       )}
-
-      {/* بخش آمار (ویژه VIP) */}
-      <div className="mt-8 overflow-hidden rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-500/5 to-orange-500/5 relative">
-        <div className="absolute top-0 right-0 bg-yellow-500 text-black text-[10px] font-bold px-3 py-1 rounded-bl-xl flex items-center gap-1 z-10">
-          <Crown className="h-3 w-3" /> VIP
-        </div>
-
-        <div className="p-6">
-          <h3 className="text-lg font-black text-[var(--text-main)] mb-4 flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-yellow-500" />
-            آمار کسایی که به لینک مراجعه کردن📊
-          </h3>
-
-          {isLoadingVip ? (
-            <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin text-yellow-500" /></div>
-          ) : !isVip ? (
-            <div className="flex flex-col items-center justify-center p-6 text-center opacity-70">
-              <Lock className="h-12 w-12 text-yellow-500 mb-3" />
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                این قابلیت ویژه کاربران VIP است. با ارتقا به VIP می‌توانید لینک‌های قابل ردیابی بسازید و آمار دقیق بازدید را ببینید.
-              </p>
-              <button className="rounded-xl bg-yellow-500 px-6 py-2 text-sm font-bold text-black hover:bg-yellow-400">ارتقا به VIP</button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                با کلیک روی دکمه زیر، لینک UTM شما به یک لینک کوتاه قابل ردیابی تبدیل می‌شود.
-              </p>
-              
-              {error && (
-                <div className="flex items-center gap-2 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-500">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
-                  {error}
-                </div>
-              )}
-
-              {!shortenedUrl ? (
-                <button onClick={handleCreateTrackableLink} disabled={isShortening || !generatedUrl} className="flex w-full items-center justify-center gap-2 rounded-xl bg-yellow-500 px-5 py-3 font-bold text-black transition hover:bg-yellow-400 disabled:opacity-50">
-                  {isShortening ? <Loader2 className="h-5 w-5 animate-spin" /> : <Link2 className="h-5 w-5" />}
-                  {isShortening ? "در حال ساخت..." : "ساخت لینک کوتاه قابل ردیابی"}
-                </button>
-              ) : (
-                <div className="rounded-xl border border-yellow-500/20 bg-black/20 p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">لینک کوتاه شما:</span>
-                    <a href={shortenedUrl} target="_blank" rel="noreferrer" className="text-sm text-yellow-500 font-bold flex items-center gap-1 hover:underline">
-                      {shortenedUrl} <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </div>
-                  <div className="flex items-center justify-between pt-3 border-t border-yellow-500/20">
-                    <span className="text-sm text-slate-400">تعداد بازدید (کلیک):</span>
-                    <span className="text-2xl font-black text-green-500">{clicks.toLocaleString("fa-IR")}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
