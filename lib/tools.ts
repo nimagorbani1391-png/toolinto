@@ -37,6 +37,7 @@ export const tools: Tool[] = [
   
   // --- ابزارهای جدید ---
   { slug: "memory-test", title: "تست حافظه تصویری", description: "جفت کارت‌های یکسان را پیدا کن", icon: "Brain", category: "social", href: "/tools/memory-test", keywords: ["حافظه", "بازی", "کارت", "ذهن"] },
+  { slug: "reaction-test", title: "تست سرعت واکنش", description: "سرعت عکس‌العمل خود را بسنجید", icon: "Zap", category: "social", href: "/tools/reaction-test", keywords: ["واکنش", "سرعت", "بازی", "کلیک"] },
 ];
 
 export function getTool(slug: string): Tool {
