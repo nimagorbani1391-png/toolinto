@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Moon, Sun, Menu, X, User, MessageCircle, LogOut, Loader2, Code2, ChevronDown, LayoutDashboard, Info, Mail } from "lucide-react";
+import { Moon, Sun, Menu, X, User, MessageCircle, LogOut, Loader2, Code2, ChevronDown, LayoutDashboard, Info, UserCog } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -96,13 +96,12 @@ export default function Header() {
                 <Code2 className="h-5 w-5 text-orange-500" /><span className="font-bold text-sm">دسترسی به API</span>
               </Link>
 
-              {/* دو لینک جدید اضافه شده */}
               <Link href="/about" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
                 <Info className="h-5 w-5 text-blue-500" /><span className="font-bold text-sm">درباره ما</span>
               </Link>
 
               <Link href="/contact" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
-                <Mail className="h-5 w-5 text-pink-500" /><span className="font-bold text-sm">تماس با ما</span>
+                <UserCog className="h-5 w-5 text-pink-500" /><span className="font-bold text-sm">تماس با ما</span>
               </Link>
             </nav>
 
