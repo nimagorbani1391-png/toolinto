@@ -39,6 +39,7 @@ export const tools: Tool[] = [
   { slug: "memory-test", title: "تست حافظه تصویری", description: "جفت کارت‌های یکسان را پیدا کن", icon: "Brain", category: "social", href: "/tools/memory-test", keywords: ["حافظه"] },
   { slug: "reaction-test", title: "تست سرعت واکنش", description: "سرعت عکس‌العمل خود را بسنجید", icon: "Zap", category: "social", href: "/tools/reaction-test", keywords: ["واکنش"] },
   { slug: "rock-paper-scissors", title: "سنگ کاغذ قیچی", description: "بازی کلاسیک با کامپیوتر", icon: "Scissors", category: "social", href: "/tools/rock-paper-scissors", keywords: ["بازی", "سنگ", "کاغذ", "قیچی"] },
+  { slug: "gpa-calculator", title: "محاسبه معدل", description: "میانگین نمرات خود را حساب کنید", icon: "Calculator", category: "utility", href: "/tools/gpa-calculator", keywords: ["معدل", "میانگین", "نمره", "حساب"] },
 ];
 
 export function getTool(slug: string): Tool {
