@@ -41,6 +41,7 @@ export const tools: Tool[] = [
   { slug: "rock-paper-scissors", title: "سنگ کاغذ قیچی", description: "بازی کلاسیک با کامپیوتر", icon: "Scissors", category: "social", href: "/tools/rock-paper-scissors", keywords: ["بازی", "سنگ", "کاغذ", "قیچی"] },
   { slug: "gpa-calculator", title: "محاسبه معدل", description: "میانگین نمرات خود را حساب کنید", icon: "Calculator", category: "utility", href: "/tools/gpa-calculator", keywords: ["معدل", "میانگین", "نمره", "حساب"] },
   { slug: "tweet-maker", title: "توییت ساز", description: "توییت فیک توییتر (X) بساز", icon: "Twitter", category: "social", href: "/tools/tweet-maker", keywords: ["توییت", "توییتر", "x", "میم"] },
+  { slug: "snake-game", title: "بازی مار", description: "بازی کلاسیک مار با کنترل لمسی", icon: "Gamepad2", category: "social", href: "/tools/snake-game", keywords: ["بازی", "مار", "سیب", "سرگرمی"] },
 ];
 
 export function getTool(slug: string): Tool {
