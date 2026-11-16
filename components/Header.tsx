@@ -77,10 +77,6 @@ export default function Header() {
                     <LayoutDashboard className="h-5 w-5 text-emerald-500" />
                     <span className="font-bold text-sm">پنل کاربری (لینک‌های من)</span>
                   </Link>
-
-                  <button onClick={handleLogout} className="flex items-center gap-3 text-red-500 p-3.5 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition text-right">
-                    <LogOut className="h-5 w-5" /><span className="font-bold text-sm">خروج از حساب</span>
-                  </button>
                 </>
               ) : (
                 <Link href="/login" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
@@ -100,10 +96,16 @@ export default function Header() {
                 <Info className="h-5 w-5 text-blue-500" /><span className="font-bold text-sm">درباره ما</span>
               </Link>
 
-              {/* آیکون تماس با ما به هدست تغییر کرد */}
               <Link href="/contact" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[var(--text-main)] p-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:opacity-80 transition text-right">
                 <Headset className="h-5 w-5 text-pink-500" /><span className="font-bold text-sm">تماس با ما</span>
               </Link>
+
+              {/* دکمه خروج به پایین منتقل شد */}
+              {user && (
+                <button onClick={handleLogout} className="mt-2 flex items-center gap-3 text-red-500 p-3.5 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition text-right">
+                  <LogOut className="h-5 w-5" /><span className="font-bold text-sm">خروج از حساب</span>
+                </button>
+              )}
             </nav>
 
             <div className="mt-6 border-t border-[var(--card-border)] pt-4">
@@ -126,4 +128,4 @@ export default function Header() {
       )}
     </>
   );
-              }
+}
