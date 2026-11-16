@@ -25,15 +25,19 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <Header />
         <main className="flex-1">{children}</main>
         
-        {/* فوتر سایت */}
-        <footer className="border-t border-[var(--card-border)] py-6 text-center text-sm text-slate-500">
-          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <footer className="border-t border-[var(--card-border)] py-8 text-center text-sm text-slate-500">
+          <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 sm:flex-row">
             <span><span dir="ltr" className="font-bold">TOOLINTO</span> · ابزارهای کوچک برای کارهای روزمره</span>
-            <span className="hidden sm:inline">|</span>
-            <Link href="/api-docs" className="font-bold text-violet-500 hover:text-violet-400 transition">
-              دسترسی به API
-            </Link>
+            
+            <div className="flex items-center gap-4">
+              <Link href="/about" className="hover:text-violet-500 transition">درباره ما</Link>
+              <span className="hidden sm:inline text-slate-700">|</span>
+              <Link href="/contact" className="hover:text-violet-500 transition">تماس با ما</Link>
+              <span className="hidden sm:inline text-slate-700">|</span>
+              <Link href="/api-docs" className="font-bold text-violet-500 hover:text-violet-400 transition">دسترسی به API</Link>
+            </div>
           </div>
+          <p className="mt-4 text-xs text-slate-600">© {new Date().getFullYear()} TOOLINTO. تمامی حقوق محفوظ است.</p>
         </footer>
       </body>
     </html>
