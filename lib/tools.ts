@@ -40,7 +40,6 @@ export const tools: Tool[] = [
   { slug: "reaction-test", title: "تست سرعت واکنش", description: "سرعت عکس‌العمل خود را بسنجید", icon: "Zap", category: "social", href: "/tools/reaction-test", keywords: ["واکنش"] },
   { slug: "rock-paper-scissors", title: "سنگ کاغذ قیچی", description: "بازی کلاسیک با کامپیوتر", icon: "Scissors", category: "social", href: "/tools/rock-paper-scissors", keywords: ["بازی", "سنگ", "کاغذ", "قیچی"] },
   { slug: "gpa-calculator", title: "محاسبه معدل", description: "میانگین نمرات خود را حساب کنید", icon: "Calculator", category: "utility", href: "/tools/gpa-calculator", keywords: ["معدل", "میانگین", "نمره", "حساب"] },
-  { slug: "countdown-timer", title: "شمارش معکوس رویدادها", description: "زمان باقی‌مانده تا امتحان یا تولد را ببینید", icon: "Hourglass", category: "datetime", href: "/tools/countdown-timer", keywords: ["شمارش معکوس", "تایمر", "رویداد", "کنکور"] },
   { slug: "tweet-maker", title: "توییت ساز", description: "توییت فیک توییتر (X) بساز", icon: "Twitter", category: "social", href: "/tools/tweet-maker", keywords: ["توییت", "توییتر", "x", "میم"] },
 ];
 
