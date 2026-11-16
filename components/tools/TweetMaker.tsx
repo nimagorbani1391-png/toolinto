@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import html2canvas from "html2canvas";
-import { Download, Image as ImageIcon, Loader2, ArrowRight, BadgeCheck } from "lucide-react";
+import { Download, Image as ImageIcon, Loader2, ArrowLeft, BadgeCheck } from "lucide-react";
 
 export default function TweetMaker() {
-  const [name, setName] = useState("custom name");
-  const [handle, setHandle] = useState("@Sirvan");
-  const [text, setText] = useState("سلام ، میتونی اینجا کلی پست توییت بسازی!");
+  const [name, setName] = useState("Toolinto");
+  const [handle, setHandle] = useState("@toolinto");
+  const [text, setText] = useState("سلام دیپ سیک این عالیه!");
   const [time, setTime] = useState("10:30 PM . 8 Jan 18");
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isVerified, setIsVerified] = useState(true);
@@ -32,9 +32,9 @@ export default function TweetMaker() {
 
     try {
       const canvas = await html2canvas(tweetRef.current, {
-        scale: 3, // کیفیت بالا
+        scale: 3, 
         useCORS: true,
-        backgroundColor: "#000000", // بک‌گراند مشکی توییتر
+        backgroundColor: "#000000", 
       });
       
       const image = canvas.toDataURL("image/png");
@@ -91,48 +91,53 @@ export default function TweetMaker() {
         </div>
       </div>
 
-      {/* پیش‌نمایش توییت */}
+      {/* پیش‌نمایش توییت (شبیه‌سازی دقیق توییتر) */}
       <div className="flex justify-center overflow-hidden rounded-2xl border border-[var(--card-border)] bg-black p-4">
-        <div ref={tweetRef} className="w-full max-w-[500px] bg-black p-5 font-sans" dir="rtl">
+        
+        {/* کادر اصلی با چیدمان LTR (چپ‌به‌راست) */}
+        <div ref={tweetRef} className="w-full max-w-[500px] bg-black p-5 font-sans" dir="ltr">
           
-          {/* هدر توییتر */}
-          <div className="flex items-center gap-4 mb-6">
-             <ArrowRight className="h-5 w-5 text-white" />
-             <span className="text-lg font-bold text-white">Tweet</span>
+          {/* هدر توییتر (فلش سمت چپ) */}
+          <div className="flex items-center gap-6 mb-4 text-white">
+             <ArrowLeft className="h-5 w-5" />
+             <span className="text-[17px] font-bold">Tweet</span>
           </div>
 
-          {/* پروفایل و اسم */}
-          <div className="flex items-start justify-between">
-            <div className="flex gap-3">
-              <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-gray-700">
-                {avatar ? (
-                  <img src={avatar} alt="avatar" className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-gray-400">👤</div>
+          {/* پروفایل (آواتار سمت چپ) */}
+          <div className="flex gap-3">
+            <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-[#16181c]">
+              {avatar ? (
+                <img src={avatar} alt="avatar" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-gray-500 text-xl bg-[#1d9bf0]">T</div>
+              )}
+            </div>
+            
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1">
+                <span className="text-[15px] font-bold text-[#e7e9ea]">{name}</span>
+                {isVerified && (
+                  <svg viewBox="0 0 24 24" aria-label="Verified account" className="h-[18px] w-[18px] text-[#1d9bf0] fill-current">
+                    <g><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.918-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.337 2.25c-.416-.165-.866-.25-1.336-.25-2.21 0-3.918 1.792-3.918 4 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.46.733 2.76 1.86 3.5-.036.227-.06.46-.06.7 0 2.21 1.71 3.998 3.918 3.998.47 0 .92-.084 1.336-.25C8.182 21.585 9.49 22.5 11 22.5s2.816-.917 3.337-2.25c.416.165.866.25 1.336.25 2.21 0 3.918-1.792 3.918-4 0-.24-.024-.473-.06-.7 1.127-.74 1.86-2.04 1.86-3.5zM10.09 16.05l-3.3-3.3 1.41-1.41 1.89 1.89 5.66-5.66 1.41 1.41-7.07 7.07z"></path></g>
+                  </svg>
                 )}
               </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1">
-                  <span className="text-[15px] font-bold text-white">{name}</span>
-                  {isVerified && <BadgeCheck className="h-4 w-4 text-[#1D9BF0]" fill="#1D9BF0" color="#000" />}
-                </div>
-                <span className="text-[15px] text-[#71767b]" dir="ltr">{handle}</span>
-              </div>
+              <span className="text-[15px] text-[#71767b]">{handle}</span>
             </div>
           </div>
 
-          {/* متن توییت */}
-          <div className="mt-4 text-[20px] leading-relaxed text-[#e7e9ea]">
-            {text}
+          {/* متن توییت (راست‌چین برای فارسی) */}
+          <div className="mt-3 text-[17px] leading-relaxed text-[#e7e9ea]">
+            <p dir="auto" className="whitespace-pre-wrap">{text}</p>
           </div>
 
           {/* لینک ترجمه */}
-          <div className="mt-4">
-            <span className="text-[15px] text-[#1D9BF0] cursor-pointer hover:underline">Translate from Persian</span>
+          <div className="mt-4 text-left">
+            <span className="text-[15px] text-[#1d9bf0] cursor-pointer hover:underline">Translate from Persian</span>
           </div>
 
           {/* تاریخ و ساعت */}
-          <div className="mt-4 text-[15px] text-[#71767b]" dir="ltr">
+          <div className="mt-4 text-[15px] text-[#71767b] text-left">
             {time}
           </div>
 
@@ -149,4 +154,4 @@ export default function TweetMaker() {
       </button>
     </div>
   );
-                }
+}
