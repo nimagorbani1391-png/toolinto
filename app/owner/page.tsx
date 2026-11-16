@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Lock, User as UserIcon, Calendar, ShieldAlert, Loader2, Users, Crown } from "lucide-react";
+import { Lock, User as UserIcon, Calendar, ShieldAlert, Loader2, Users } from "lucide-react";
 
 export default function OwnerPage() {
   const [name, setName] = useState("");
@@ -13,23 +13,6 @@ export default function OwnerPage() {
   const [error, setError] = useState("");
   
   const [users, setUsers] = useState<any[]>([]);
-  const [vips, setVips] = useState<any[]>([]);
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
-
-  const fetchData = async (pass: string) => {
-    const res = await fetch("/api/owner/data", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "نیما قربانی", year: "1391", password: pass }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setUsers(data.users);
-      setVips(data.vips);
-      return true;
-    }
-    return false;
-  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,30 +20,22 @@ export default function OwnerPage() {
     setError("");
 
     try {
-      const success = await fetchData(password);
-      if (!success) throw new Error("اطلاعات اشتباه است.");
+      const res = await fetch("/api/owner/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, year, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error);
+
+      setUsers(data.users);
       setIsAuthenticated(true);
     } catch (err: any) {
       setError(err.message);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const toggleVip = async (userId: string) => {
-    setUpdatingId(userId);
-    try {
-      await fetch("/api/owner/toggle-vip", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, password }),
-      });
-      // آپدیت کردن لیست
-      await fetchData(password);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setUpdatingId(null);
     }
   };
 
@@ -79,15 +54,24 @@ export default function OwnerPage() {
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="mb-1 block text-sm text-slate-400">نام کامل مالک</label>
-              <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="نام خود را وارد کنید" className="w-full rounded-xl border border-slate-700 bg-black/50 p-3 text-white outline-none focus:border-red-500" />
+              <div className="relative">
+                <UserIcon className="absolute right-3 top-3.5 h-5 w-5 text-slate-500" />
+                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="نام خود را وارد کنید" className="w-full rounded-xl border border-slate-700 bg-black/50 p-3 pr-10 text-white outline-none focus:border-red-500" />
+              </div>
             </div>
             <div>
               <label className="mb-1 block text-sm text-slate-400">سال تولد</label>
-              <input type="text" required value={year} onChange={(e) => setYear(e.target.value)} placeholder="مثلاً 1391" className="w-full rounded-xl border border-slate-700 bg-black/50 p-3 text-white outline-none focus:border-red-500" />
+              <div className="relative">
+                <Calendar className="absolute right-3 top-3.5 h-5 w-5 text-slate-500" />
+                <input type="text" required value={year} onChange={(e) => setYear(e.target.value)} placeholder="مثلاً 1391" className="w-full rounded-xl border border-slate-700 bg-black/50 p-3 pr-10 text-white outline-none focus:border-red-500" />
+              </div>
             </div>
             <div>
               <label className="mb-1 block text-sm text-slate-400">رمز عبور مالک</label>
-              <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} dir="ltr" className="w-full rounded-xl border border-slate-700 bg-black/50 p-3 text-left text-white outline-none focus:border-red-500" />
+              <div className="relative">
+                <Lock className="absolute right-3 top-3.5 h-5 w-5 text-slate-500" />
+                <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} dir="ltr" className="w-full rounded-xl border border-slate-700 bg-black/50 p-3 pr-10 text-left text-white outline-none focus:border-red-500" />
+              </div>
             </div>
 
             <button type="submit" disabled={isLoading} className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 py-3 font-bold text-white transition hover:bg-red-700 disabled:opacity-50">
@@ -101,7 +85,7 @@ export default function OwnerPage() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white p-4 sm:p-8">
-      <div className="mx-auto max-w-6xl space-y-8">
+      <div className="mx-auto max-w-4xl space-y-8">
         
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <h1 className="text-2xl font-black text-green-500 flex items-center gap-2">
@@ -110,81 +94,41 @@ export default function OwnerPage() {
           <p className="text-sm text-slate-400">خوش آمدی نیما قربانی</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          
-          {/* جدول کاربران عادی */}
-          <div className="rounded-2xl border border-slate-800 bg-[#111] overflow-hidden">
-            <div className="bg-slate-900 p-4 border-b border-slate-800 flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-500" />
-              <h2 className="font-bold text-lg">کل کاربران ({users.length} نفر)</h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-right text-sm">
-                <thead className="bg-slate-900/50 text-slate-400">
-                  <tr>
-                    <th className="p-3">نام</th>
-                    <th className="p-3">ایمیل</th>
-                    <th className="p-3 text-center">عملیات</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800">
-                  {users.length === 0 ? (
-                    <tr><td colSpan={3} className="p-4 text-center text-slate-500">هنوز کاربری ثبت‌نام نکرده است.</td></tr>
-                  ) : (
-                    users.map((u) => (
-                      <tr key={u.id} className="hover:bg-slate-900/50">
-                        <td className="p-3">{u.name || "بدون نام"}</td>
-                        <td className="p-3 text-slate-400" dir="ltr">{u.email}</td>
-                        <td className="p-3 text-center">
-                          <button 
-                            onClick={() => toggleVip(u.id)}
-                            disabled={updatingId === u.id}
-                            className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold transition ${u.isVip ? "bg-slate-700 text-slate-300" : "bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30"}`}
-                          >
-                            {updatingId === u.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Crown className="h-3 w-3" />}
-                            {u.isVip ? "حذف VIP" : "ارتقا به VIP"}
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+        {/* جدول کاربران */}
+        <div className="rounded-2xl border border-slate-800 bg-[#111] overflow-hidden">
+          <div className="bg-slate-900 p-4 border-b border-slate-800 flex items-center gap-2">
+            <Users className="h-5 w-5 text-blue-500" />
+            <h2 className="font-bold text-lg">کل کاربران ثبت‌نام شده ({users.length} نفر)</h2>
           </div>
-
-          {/* جدول کاربران VIP */}
-          <div className="rounded-2xl border border-yellow-500/30 bg-[#111] overflow-hidden">
-            <div className="bg-yellow-500/10 p-4 border-b border-yellow-500/30 flex items-center gap-2">
-              <Crown className="h-5 w-5 text-yellow-500" />
-              <h2 className="font-bold text-lg text-yellow-500">کاربران VIP ({vips.length} نفر)</h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-right text-sm">
-                <thead className="bg-yellow-500/5 text-yellow-600">
-                  <tr>
-                    <th className="p-3">نام</th>
-                    <th className="p-3">ایمیل</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800">
-                  {vips.length === 0 ? (
-                    <tr><td colSpan={2} className="p-4 text-center text-slate-500">هنوز کسی اشتراک VIP نخریده است.</td></tr>
-                  ) : (
-                    vips.map((u) => (
-                      <tr key={u.id} className="hover:bg-yellow-500/5">
-                        <td className="p-3 font-bold text-yellow-500">{u.name || "بدون نام"}</td>
-                        <td className="p-3 text-slate-400" dir="ltr">{u.email}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-right text-sm">
+              <thead className="bg-slate-900/50 text-slate-400">
+                <tr>
+                  <th className="p-4">نام</th>
+                  <th className="p-4">ایمیل</th>
+                  <th className="p-4">تاریخ عضویت</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800">
+                {users.length === 0 ? (
+                  <tr><td colSpan={3} className="p-6 text-center text-slate-500">هنوز کاربری ثبت‌نام نکرده است.</td></tr>
+                ) : (
+                  users.map((u) => (
+                    <tr key={u.id} className="hover:bg-slate-900/50 transition">
+                      <td className="p-4 font-bold">{u.name || "بدون نام"}</td>
+                      <td className="p-4 text-slate-400" dir="ltr">{u.email}</td>
+                      <td className="p-4 text-slate-500 text-xs">
+                        {new Intl.DateTimeFormat("fa-IR", { dateStyle: "medium" }).format(new Date(u.createdAt))}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-
         </div>
+
       </div>
     </div>
   );
-      }
+}
