@@ -30,9 +30,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <span><span dir="ltr" className="font-bold">TOOLINTO</span> · ابزارهای کوچک برای کارهای روزمره</span>
             
             <div className="flex items-center gap-4">
-              <Link href="/about" className="hover:text-violet-500 transition">درباره ما</Link>
+              {/* اینجا کلاس‌های رنگ بنفش رو برای همه یکسان کردم */}
+              <Link href="/about" className="font-bold text-violet-500 hover:text-violet-400 transition">درباره ما</Link>
               <span className="hidden sm:inline text-slate-700">|</span>
-              <Link href="/contact" className="hover:text-violet-500 transition">تماس با ما</Link>
+              <Link href="/contact" className="font-bold text-violet-500 hover:text-violet-400 transition">تماس با ما</Link>
               <span className="hidden sm:inline text-slate-700">|</span>
               <Link href="/api-docs" className="font-bold text-violet-500 hover:text-violet-400 transition">دسترسی به API</Link>
             </div>
