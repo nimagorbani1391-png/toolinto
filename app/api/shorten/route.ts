@@ -43,7 +43,9 @@ export async function POST(req: Request) {
       const { payload } = await jwtVerify(token, JWT_SECRET);
       userId = payload.userId as string;
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error("JWT Verification Error:", e);
+  }
 
   for (let attempt = 0; attempt < 5; attempt++) {
     const shortCode = generateShortCode();
@@ -52,9 +54,12 @@ export async function POST(req: Request) {
         data: { originalUrl, shortCode, userId: userId || undefined },
       });
       return NextResponse.json(link, { status: 201 });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") continue;
-      return fail("خطای سرور.", 500);
+      
+      // این خط رو اضافه کردم تا خطای واقعی رو توی صفحه ببینی
+      console.error("Shortener Error:", e);
+      return NextResponse.json({ error: `خطای دیتابیس: ${e.message}` }, { status: 500 });
     }
   }
   return fail("ساخت لینک ناموفق بود.", 500);
