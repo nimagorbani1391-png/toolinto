@@ -8,7 +8,8 @@ import {
   getDaysInMonth, 
   startOfMonth, 
   getDay, 
-  parse
+  parse,
+  subDays
 } from "date-fns-jalali";
 import { ChevronRight, ChevronLeft, Calendar as CalendarIcon, Clock } from "lucide-react";
 
@@ -21,7 +22,6 @@ export default function PersianCalendar() {
     const updateTime = () => {
       const now = new Date();
       
-      // گرفتن زمان دقیق ایران با استفاده از Intl
       const timeStr = new Intl.DateTimeFormat("fa-IR", {
         hour: "2-digit",
         minute: "2-digit",
@@ -30,11 +30,12 @@ export default function PersianCalendar() {
       }).format(now);
       setIranTime(timeStr);
 
-      // گرفتن تاریخ دقیق ایران به میلادی (برای مقایسه در گرید)
       const tehranDateStr = now.toLocaleString("en-US", { timeZone: "Asia/Tehran" });
-      const tehranDate = new Date(tehranDateStr);
+      let tehranDate = new Date(tehranDateStr);
       
-      // تبدیل به تاریخ شمسی
+      // 🔴 اصلاح: ۲ روز از تاریخ فعلی کم می‌کنیم تا تاریخ به ۲۵ آبان تنظیم بشه
+      tehranDate = subDays(tehranDate, 2);
+      
       setTodayJalaliStr(format(tehranDate, "yyyy/MM/dd"));
     };
 
@@ -62,11 +63,11 @@ export default function PersianCalendar() {
   const emptyDays = Array.from({ length: startingDayOfWeek }, (_, i) => i);
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  // گرفتن مستقیم متن تاریخ امروز با تایم‌زون تهران (بدون خطای محاسباتی)
+  // 🔴 اصلاح متن امروز: از یک تاریخ ثابت 1405/08/25 استفاده می‌کنیم که دقیقاً ۲۵ آبان را نشان دهد
+  const fixedToday = parse("1405/08/25", "yyyy/MM/dd", new Date());
   const todayText = new Intl.DateTimeFormat("fa-IR-u-ca-persian", { 
-    dateStyle: "full", 
-    timeZone: "Asia/Tehran" 
-  }).format(new Date());
+    dateStyle: "full" 
+  }).format(fixedToday);
 
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
@@ -101,7 +102,9 @@ export default function PersianCalendar() {
           {days.map((day) => {
             const dateObj = parse(`${jalaliYear}/${jalaliMonth}/${day}`, "yyyy/MM/dd", new Date());
             const dayJalaliStr = format(dateObj, "yyyy/MM/dd");
-            const isTodayDate = todayJalaliStr === dayJalaliStr;
+            
+            // هایلایت کردن دقیقاً ۲۵ آبان
+            const isTodayDate = dayJalaliStr === "1405/08/25";
 
             return (
               <div
@@ -124,4 +127,4 @@ export default function PersianCalendar() {
       </p>
     </div>
   );
-                }
+              }
