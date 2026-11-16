@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RotateCcw, Trophy } from "lucide-react";
+import { RotateCcw, Trophy } from "lucide-react";
 
 const GRID_SIZE = 20;
 const CELL_SIZE = 20;
@@ -156,13 +156,6 @@ export default function SnakeGame() {
     }
   }, [score, highScore]);
 
-  const handleDirection = (newDir: Point) => {
-    // جلوگیری از حرکت در جهت مخالف
-    const currentDir = dirRef.current;
-    if (currentDir.x === -newDir.x && currentDir.y === -newDir.y) return;
-    nextDirRef.current = newDir;
-  };
-
   // کنترل لمسی با Swipe
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartRef.current = {
@@ -182,11 +175,16 @@ export default function SnakeGame() {
     const dy = touchEnd.y - touchStartRef.current.y;
 
     if (Math.abs(dx) > Math.abs(dy)) {
-      if (dx > 30) handleDirection({ x: 1, y: 0 }); // راست
-      else if (dx < -30) handleDirection({ x: -1, y: 0 }); // چپ
+      if (dx > 30) nextDirRef.current = { x: 1, y: 0 }; // راست
+      else if (dx < -30) nextDirRef.current = { x: -1, y: 0 }; // چپ
     } else {
-      if (dy > 30) handleDirection({ x: 0, y: 1 }); // پایین
-      else if (dy < -30) handleDirection({ x: 0, y: -1 }); // بالا
+      if (dy > 30) nextDirRef.current = { x: 0, y: 1 }; // پایین
+      else if (dy < -30) nextDirRef.current = { x: 0, y: -1 }; // بالا
+    }
+
+    // جلوگیری از حرکت در جهت مخالف
+    if (dirRef.current.x === -nextDirRef.current.x && dirRef.current.y === -nextDirRef.current.y) {
+       nextDirRef.current = dirRef.current;
     }
 
     touchStartRef.current = null;
@@ -249,24 +247,6 @@ export default function SnakeGame() {
           </div>
         )}
       </div>
-
-      {/* دکمه‌های کنترل لمسی */}
-      <div className="grid grid-cols-3 gap-2 w-full max-w-[250px]">
-        <div />
-        <button onClick={() => handleDirection({ x: 0, y: -1 })} className="flex aspect-square items-center justify-center rounded-xl bg-slate-800 text-white active:bg-violet-600 transition">
-          <ArrowUp className="h-8 w-8" />
-        </button>
-        <div />
-        <button onClick={() => handleDirection({ x: -1, y: 0 })} className="flex aspect-square items-center justify-center rounded-xl bg-slate-800 text-white active:bg-violet-600 transition">
-          <ArrowLeft className="h-8 w-8" />
-        </button>
-        <button onClick={() => handleDirection({ x: 0, y: 1 })} className="flex aspect-square items-center justify-center rounded-xl bg-slate-800 text-white active:bg-violet-600 transition">
-          <ArrowDown className="h-8 w-8" />
-        </button>
-        <button onClick={() => handleDirection({ x: 1, y: 0 })} className="flex aspect-square items-center justify-center rounded-xl bg-slate-800 text-white active:bg-violet-600 transition">
-          <ArrowRight className="h-8 w-8" />
-        </button>
-      </div>
     </div>
   );
-  }
+}
