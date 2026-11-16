@@ -7,7 +7,7 @@ import { Download, Image as ImageIcon, Loader2, ArrowLeft, BadgeCheck } from "lu
 export default function TweetMaker() {
   const [name, setName] = useState("Toolinto");
   const [handle, setHandle] = useState("@toolinto");
-  const [text, setText] = useState("سلام دیپ سیک این عالیه!");
+  const [text, setText] = useState("سلام ، خوش اومدی!");
   const [time, setTime] = useState("10:30 PM . 8 Jan 18");
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isVerified, setIsVerified] = useState(true);
