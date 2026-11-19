@@ -128,7 +128,8 @@ export default function ImageResizer() {
           </div>
 
           <div className="flex justify-center overflow-hidden rounded-xl border border-[var(--card-border)] bg-black/20 p-4">
-            <img 
+            {/* eslint-disable-next-line @next/next/no-img-element -- This preview uses browser-generated data. */}
+            <img
               src={resizedUrl || imageSrc} 
               alt="Preview" 
               className="max-h-[300px] object-contain" 

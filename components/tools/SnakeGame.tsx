@@ -17,6 +17,8 @@ export default function SnakeGame() {
   
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
+  const highScoreRef = useRef(0);
+  const scoreRef = useRef(0);
   const [isGameOver, setIsGameOver] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
 
@@ -24,24 +26,19 @@ export default function SnakeGame() {
   const snakeRef = useRef<Point[]>(INITIAL_SNAKE);
   const dirRef = useRef<Point>(INITIAL_DIR);
   const nextDirRef = useRef<Point>(INITIAL_DIR);
-  const appleRef = useRef<Point>({ x: 5, y: 5 });
+  const appleRef = useRef<Point | null>({ x: 5, y: 5 });
   const gameLoopRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const generateApple = useCallback(() => {
-    let newApple: Point;
-    let isOccupied = true;
-    
-    while (isOccupied) {
-      newApple = {
-        x: Math.floor(Math.random() * GRID_SIZE),
-        y: Math.floor(Math.random() * GRID_SIZE),
-      };
-      // چک کردن اینکه سیب روی بدن مار نیفته
-      isOccupied = snakeRef.current.some((segment) => segment.x === newApple.x && segment.y === newApple.y);
+    const occupied = new Set(snakeRef.current.map(({ x, y }) => y * GRID_SIZE + x));
+    const empty: Point[] = [];
+    for (let y = 0; y < GRID_SIZE; y++) {
+      for (let x = 0; x < GRID_SIZE; x++) {
+        if (!occupied.has(y * GRID_SIZE + x)) empty.push({ x, y });
+      }
     }
-    
-    appleRef.current = newApple;
+    appleRef.current = empty.length ? empty[Math.floor(Math.random() * empty.length)] : null;
   }, []);
 
   const drawGame = useCallback(() => {
@@ -59,12 +56,14 @@ export default function SnakeGame() {
     ctx.strokeRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
     // کشیدن سیب
-    ctx.fillStyle = "#ef4444";
-    ctx.beginPath();
-    const appleCenterX = appleRef.current.x * CELL_SIZE + CELL_SIZE / 2;
-    const appleCenterY = appleRef.current.y * CELL_SIZE + CELL_SIZE / 2;
-    ctx.arc(appleCenterX, appleCenterY, CELL_SIZE / 2 - 2, 0, Math.PI * 2);
-    ctx.fill();
+    const apple = appleRef.current;
+    if (apple) {
+      ctx.fillStyle = "#ef4444";
+      ctx.beginPath();
+      ctx.arc(apple.x * CELL_SIZE + CELL_SIZE / 2, apple.y * CELL_SIZE + CELL_SIZE / 2,
+        CELL_SIZE / 2 - 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     // کشیدن مار
     snakeRef.current.forEach((segment, index) => {
@@ -96,22 +95,29 @@ export default function SnakeGame() {
     }
 
     // چک کردن برخورد با بدن خودش
-    if (snake.some((segment) => segment.x === head.x && segment.y === head.y)) {
+    const apple = appleRef.current;
+    const ate = apple?.x === head.x && apple.y === head.y;
+    const body = ate ? snake : snake.slice(0, -1);
+    if (body.some((segment) => segment.x === head.x && segment.y === head.y)) {
       setIsGameOver(true);
       return;
     }
 
-    const newSnake = [head, ...snake];
+    snakeRef.current = [head, ...body];
 
     // چک کردن خوردن سیب
-    if (head.x === appleRef.current.x && head.y === appleRef.current.y) {
-      setScore((s) => s + 10);
+    if (ate) {
+      scoreRef.current += 10;
+      setScore(scoreRef.current);
+      if (scoreRef.current > highScoreRef.current) {
+        highScoreRef.current = scoreRef.current;
+        setHighScore(scoreRef.current);
+        try { localStorage.setItem("snake_high_score", String(scoreRef.current)); } catch { /* storage unavailable */ }
+      }
       generateApple();
-    } else {
-      newSnake.pop(); // اگه سیب نخورد، دنباله رو حذف کن
+      if (!appleRef.current) setIsGameOver(true);
     }
 
-    snakeRef.current = newSnake;
     drawGame();
   }, [isGameOver, isStarted, drawGame, generateApple]);
 
@@ -119,6 +125,7 @@ export default function SnakeGame() {
     snakeRef.current = INITIAL_SNAKE;
     dirRef.current = INITIAL_DIR;
     nextDirRef.current = INITIAL_DIR;
+    scoreRef.current = 0;
     setScore(0);
     setIsGameOver(false);
     setIsStarted(true);
@@ -128,12 +135,20 @@ export default function SnakeGame() {
 
   useEffect(() => {
     // لود کردن رکورد
-    const savedHighScore = localStorage.getItem("snake_high_score");
-    if (savedHighScore) setHighScore(Number(savedHighScore));
+    const frame = requestAnimationFrame(() => {
+      try {
+        const saved = Number(localStorage.getItem("snake_high_score"));
+        if (Number.isSafeInteger(saved) && saved > highScoreRef.current) {
+          highScoreRef.current = saved;
+          setHighScore(saved);
+        }
+      } catch { /* storage unavailable */ }
+    });
     
     drawGame(); // رسم اولیه
 
     return () => {
+      cancelAnimationFrame(frame);
       if (gameLoopRef.current) clearInterval(gameLoopRef.current);
     };
   }, [drawGame]);
@@ -149,12 +164,6 @@ export default function SnakeGame() {
     };
   }, [isStarted, isGameOver, updateGame]);
 
-  useEffect(() => {
-    if (score > highScore) {
-      setHighScore(score);
-      localStorage.setItem("snake_high_score", score.toString());
-    }
-  }, [score, highScore]);
 
   // کنترل لمسی با Swipe
   const handleTouchStart = (e: React.TouchEvent) => {

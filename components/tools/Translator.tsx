@@ -70,6 +70,7 @@ export default function Translator() {
         {/* بخش متن مبدا */}
         <div>
           <textarea
+            maxLength={1000}
             rows={6}
             value={sourceText}
             onChange={(e) => setSourceText(e.target.value)}

@@ -17,15 +17,9 @@ export default function ScrollReveal({ children }: { children: React.ReactNode }
       { threshold: 0.1 } // وقتی ۱۰ درصد از عنصر دیده شد، انیمیشن اجرا میشه
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
-    };
+    const element = ref.current;
+    if (element) observer.observe(element);
+    return () => observer.disconnect();
   }, []);
 
   return (

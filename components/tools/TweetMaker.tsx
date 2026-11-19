@@ -107,7 +107,8 @@ export default function TweetMaker() {
           <div className="flex gap-3">
             <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-[#16181c]">
               {avatar ? (
-                <img src={avatar} alt="avatar" className="h-full w-full object-cover" />
+                // eslint-disable-next-line @next/next/no-img-element -- The avatar is a local file preview.
+                <img src={avatar} alt="تصویر پروفایل" className="h-full w-full object-cover" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-gray-500 text-xl bg-[#1d9bf0]">T</div>
               )}

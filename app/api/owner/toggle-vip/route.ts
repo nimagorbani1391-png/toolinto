@@ -1,25 +1,26 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '../../../../lib/prisma';
+import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
+import { getAdminId } from "../../../../lib/auth";
+import { prisma } from "../../../../lib/prisma";
+import { isRecord } from "../../../../lib/validation";
 
 export async function POST(req: Request) {
   try {
-    const { userId, password } = await req.json();
-
-    if (password !== "🦾&💪🏻") {
-      return NextResponse.json({ error: 'دسترسی غیرمجاز!' }, { status: 401 });
+    if (!(await getAdminId())) return NextResponse.json({ error: "دسترسی غیرمجاز است." }, { status: 403 });
+    const input: unknown = await req.json().catch(() => null);
+    if (!isRecord(input) || typeof input.userId !== "string" ||
+        !input.userId || input.userId.length > 100 || typeof input.isVip !== "boolean") {
+      return NextResponse.json({ error: "درخواست نامعتبر است." }, { status: 400 });
     }
-
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) return NextResponse.json({ error: 'کاربر یافت نشد' }, { status: 404 });
-
-    // تغییر وضعیت VIP (اگر true بود، false میشه و برعکس)
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: { isVip: !user.isVip },
+    const user = await prisma.user.update({
+      where: { id: input.userId }, data: { isVip: input.isVip }, select: { isVip: true },
     });
-
-    return NextResponse.json({ success: true, isVip: updatedUser.isVip });
+    return NextResponse.json({ isVip: user.isVip });
   } catch (error) {
-    return NextResponse.json({ error: 'خطای سرور' }, { status: 500 });
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      return NextResponse.json({ error: "کاربر یافت نشد." }, { status: 404 });
+    }
+    console.error("VIP update failed", error);
+    return NextResponse.json({ error: "خطای سرور." }, { status: 500 });
   }
 }

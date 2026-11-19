@@ -1,0 +1,49 @@
+name: Build signed Android APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Prepare Android configuration
+        env:
+          TWA_MANIFEST_JSON: ${{ vars.TWA_MANIFEST_JSON }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          test -n "$TWA_MANIFEST_JSON" && test -n "$ANDROID_KEYSTORE_BASE64" || {
+            echo "::error::Configure TWA_MANIFEST_JSON and ANDROID_KEYSTORE_BASE64 before running this workflow."
+            exit 1
+          }
+          mkdir -p apk-build "$HOME/.bubblewrap"
+          printf '%s' "$TWA_MANIFEST_JSON" | jq -e 'objects | select(.host and .packageId and .signingKey.alias)' > apk-build/twa-manifest.json
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/toolinto.keystore"
+          jq -n --arg jdkPath "$JAVA_HOME" --arg androidSdkPath "$ANDROID_HOME" '{jdkPath: $jdkPath, androidSdkPath: $androidSdkPath}' > "$HOME/.bubblewrap/config.json"
+      - name: Generate and build APK
+        working-directory: apk-build
+        env:
+          BUBBLEWRAP_KEYSTORE_PASSWORD: ${{ secrets.BUBBLEWRAP_KEYSTORE_PASSWORD }}
+          BUBBLEWRAP_KEY_PASSWORD: ${{ secrets.BUBBLEWRAP_KEY_PASSWORD }}
+        run: |
+          test -n "$BUBBLEWRAP_KEYSTORE_PASSWORD" && test -n "$BUBBLEWRAP_KEY_PASSWORD"
+          npx --yes @bubblewrap/cli@1.27.0 update --skipVersionUpgrade
+          npx --yes @bubblewrap/cli@1.27.0 build \
+            --signingKeyPath="$RUNNER_TEMP/toolinto.keystore" \
+            --signingKeyAlias="$(jq -r .signingKey.alias twa-manifest.json)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Toolinto-APK
+          path: apk-build/app-release-signed.apk
+          if-no-files-found: error

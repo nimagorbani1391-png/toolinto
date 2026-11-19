@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Download, FileText, Settings2 } from "lucide-react";
 
 export default function TextToPdf() {
@@ -8,7 +8,7 @@ export default function TextToPdf() {
   const [text, setText] = useState("");
   const [fontSize, setFontSize] = useState(16);
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
       alert("لطفاً پاپ‌آپ (Popup) مرورگر خود را فعال کنید.");
@@ -18,15 +18,13 @@ export default function TextToPdf() {
     printWindow.document.write(`
       <html dir="rtl" lang="fa">
         <head>
-          <title>${title || "متن TOOLINTO"}</title>
+          <title>متن TOOLINTO</title>
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
             body {
-              font-family: 'Vazirmatn', sans-serif;
+              font-family: 'Vazirmatn Variable', system-ui, sans-serif;
               padding: 40px;
               line-height: 2;
               color: #111;
-              font-size: ${fontSize}px;
             }
             h1 {
               font-size: 28px;
@@ -46,19 +44,30 @@ export default function TextToPdf() {
           </style>
         </head>
         <body>
-          ${title ? `<h1>${title}</h1>` : ""}
-          <div class="content">${text || "متنی وارد نشده است."}</div>
+          <h1 id="document-title"></h1>
+          <div id="document-text" class="content"></div>
         </body>
       </html>
     `);
     
     printWindow.document.close();
-    printWindow.focus();
-    
-    setTimeout(() => {
+    const doc = printWindow.document;
+    const heading = doc.getElementById("document-title");
+    const content = doc.getElementById("document-text");
+    if (!heading || !content) return;
+    doc.title = title || "متن TOOLINTO";
+    heading.textContent = title;
+    heading.hidden = !title;
+    content.textContent = text || "متنی وارد نشده است.";
+    doc.body.style.fontSize = `${Math.min(24, Math.max(12, fontSize))}px`;
+    for (const face of document.fonts) {
+      if (face.family.includes("Vazirmatn")) doc.fonts.add(face);
+    }
+    await doc.fonts.ready;
+    if (!printWindow.closed) {
+      printWindow.focus();
       printWindow.print();
-      // printWindow.close(); // اگر می‌خوای پنجره بعد از پرینت بسته بشه، این خط رو آنکامنت کن
-    }, 500);
+    }
   };
 
   return (

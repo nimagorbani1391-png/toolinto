@@ -4,6 +4,7 @@ import { useState } from "react";
 import { RotateCcw } from "lucide-react";
 
 type Choice = "rock" | "paper" | "scissors" | null;
+const OPTIONS = ["rock", "paper", "scissors"] as const;
 
 const CHOICES = {
   rock: { emoji: "🪨", name: "سنگ" },
@@ -18,11 +19,9 @@ export default function RockPaperScissors() {
   const [userScore, setUserScore] = useState(0);
   const [computerScore, setComputerScore] = useState(0);
 
-  const play = (choice: "rock" | "paper" | "scissors") => {
+  const play = (choice: NonNullable<Choice>, randomChoice: NonNullable<Choice>) => {
     setUserChoice(choice);
     
-    const options: ("rock" | "paper" | "scissors")[] = ["rock", "paper", "scissors"];
-    const randomChoice = options[Math.floor(Math.random() * 3)];
     setComputerChoice(randomChoice);
 
     // منطق برد و باخت
@@ -92,10 +91,10 @@ export default function RockPaperScissors() {
 
       {/* دکمه‌های انتخاب */}
       <div className="grid w-full max-w-md grid-cols-3 gap-3">
-        {(["rock", "paper", "scissors"] as const).map((choice) => (
+        {OPTIONS.map((choice) => (
           <button
             key={choice}
-            onClick={() => play(choice)}
+            onClick={() => play(choice, OPTIONS[Math.floor(Math.random() * OPTIONS.length)])}
             className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] py-4 text-4xl transition hover:-translate-y-1 hover:border-violet-500 hover:shadow-lg"
           >
             <span>{CHOICES[choice].emoji}</span>

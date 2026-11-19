@@ -1,36 +1,18 @@
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { jwtVerify } from 'jose';
-import { prisma } from '../../../../lib/prisma';
-
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'toolinto-super-secret-key-123');
+import { NextResponse } from "next/server";
+import { getSessionUserId } from "../../../../lib/auth";
+import { prisma } from "../../../../lib/prisma";
 
 export async function GET() {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth_token')?.value;
-
-    if (!token) {
-      return NextResponse.json({ user: null }, { status: 200 });
-    }
-
-    const { payload } = await jwtVerify(token, JWT_SECRET);
-    
-    // گرفتن اطلاعات کامل کاربر از دیتابیس برای چک کردن VIP
-    const user = await prisma.user.findUnique({ where: { id: payload.userId as string } });
-    
-    if (!user) {
-      return NextResponse.json({ user: null }, { status: 200 });
-    }
-
-    return NextResponse.json({ 
-      user: { 
-        name: user.name || 'کاربر', 
-        userId: user.id,
-        isVip: user.isVip 
-      } 
-    }, { status: 200 });
+    const id = await getSessionUserId();
+    const user = id ? await prisma.user.findUnique({
+      where: { id }, select: { id: true, name: true, isVip: true },
+    }) : null;
+    return NextResponse.json({
+      user: user ? { name: user.name || "کاربر", userId: user.id, isVip: user.isVip } : null,
+    }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
-    return NextResponse.json({ user: null }, { status: 200 });
+    console.error("Session lookup failed", error);
+    return NextResponse.json({ user: null }, { status: 500 });
   }
 }

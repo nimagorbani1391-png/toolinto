@@ -76,14 +76,14 @@ export default function ApiDocsPage() {
             </div>
           </div>
           <div className="p-6 font-mono text-sm" dir="ltr">
-            <p className="text-slate-500">// به زودی...</p>
+            <p className="text-slate-500">{"// نمونهٔ API فعلی کوتاه‌کننده"}</p>
             <p className="mt-2 text-cyan-400">
               <span className="text-violet-400">const</span> response = <span className="text-violet-400">await</span> fetch(
             </p>
             <p className="pl-6 text-emerald-400">
-              <span className="text-yellow-400">'</span>https://api.toolinto.com/v1/shorten<span className="text-yellow-400">'</span>,
+              <span className="text-yellow-400">{'"/api/shorten"'}</span>,
             </p>
-            <p className="pl-6 text-slate-400">{`{ method: 'POST', body: ... }`}</p>
+            <p className="pl-6 text-slate-400">{`{ method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: "https://example.com" }) }`}</p>
             <p className="text-cyan-400">);</p>
             <p className="mt-4 flex items-center gap-2 text-slate-500">
               <Loader2 className="h-3 w-3 animate-spin" />

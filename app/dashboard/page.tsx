@@ -5,21 +5,31 @@ import Link from "next/link";
 import { ArrowRight, BarChart3, Link as LinkIcon, Loader2, ExternalLink } from "lucide-react";
 import CopyButton from "../../components/CopyButton";
 
+type ShortLink = { id: string; shortCode: string; originalUrl: string; clicks: number };
+
 export default function DashboardPage() {
-  const [links, setLinks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [links, setLinks] = useState<ShortLink[]>([]);
+  const [status, setStatus] = useState<"loading" | "login" | "error" | "ready">("loading");
 
   useEffect(() => {
-    fetch("/api/user/links")
-      .then(res => res.json())
-      .then(data => {
-        if (data.links) setLinks(data.links);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    const controller = new AbortController();
+    async function load() {
+      try {
+        const response = await fetch("/api/user/links", { signal: controller.signal, cache: "no-store" });
+        if (response.status === 401) { setStatus("login"); return; }
+        if (!response.ok) throw new Error();
+        const data: { links: ShortLink[] } = await response.json();
+        setLinks(data.links);
+        setStatus("ready");
+      } catch {
+        if (!controller.signal.aborted) setStatus("error");
+      }
+    }
+    void load();
+    return () => controller.abort();
   }, []);
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-[var(--bg-main)]"><Loader2 className="h-10 w-10 animate-spin text-violet-500" /></div>;
+  if (status === "loading") return <div role="status" aria-label="در حال دریافت لینک‌ها" className="flex min-h-screen items-center justify-center bg-[var(--bg-main)]"><Loader2 className="h-10 w-10 animate-spin text-violet-500" /></div>;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
@@ -37,7 +47,11 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {links.length === 0 ? (
+      {status === "login" ? (
+        <p>برای دیدن لینک‌ها <Link href="/login" className="text-violet-400">وارد حساب شوید</Link>.</p>
+      ) : status === "error" ? (
+        <p role="alert">لینک‌ها دریافت نشدند. صفحه را دوباره بارگذاری کنید.</p>
+      ) : links.length === 0 ? (
         <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] p-8 text-center">
           <LinkIcon className="mx-auto h-12 w-12 text-slate-500 mb-4 opacity-50" />
           <p className="text-slate-500">شما هنوز هیچ لینکی نساخته‌اید.</p>

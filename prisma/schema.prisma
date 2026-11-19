@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Link {
@@ -13,6 +12,10 @@ model Link {
   shortCode   String   @unique
   clicks      Int      @default(0)
   createdAt   DateTime @default(now())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
 }
 
 model User {
@@ -22,4 +25,5 @@ model User {
   name      String?
   isVip     Boolean  @default(false)
   createdAt DateTime @default(now())
+  links     Link[]
 }

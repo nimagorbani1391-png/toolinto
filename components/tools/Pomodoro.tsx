@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Play, Pause, RotateCcw, Settings } from "lucide-react";
 
 export default function Pomodoro() {
@@ -12,8 +12,6 @@ export default function Pomodoro() {
   const [timeLeft, setTimeLeft] = useState(workTime * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
@@ -32,29 +30,28 @@ export default function Pomodoro() {
       gainNode.connect(ctx.destination);
       oscillator.start();
       oscillator.stop(ctx.currentTime + 1.5);
+      oscillator.onended = () => { void ctx.close(); };
     } catch (e) {
       console.log("Audio not supported");
     }
   };
 
   useEffect(() => {
-    if (isRunning && timeLeft > 0) {
-      timerRef.current = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-    } else if (timeLeft === 0 && isRunning) {
-      setIsRunning(false);
-      playSound();
-      if (mode === "work") {
-        setMode("break");
-        setTimeLeft(breakTime * 60);
+    if (!isRunning) return;
+    const timer = setTimeout(() => {
+      if (timeLeft > 1) {
+        setTimeLeft(timeLeft - 1);
       } else {
-        setMode("work");
-        setTimeLeft(workTime * 60);
+        setIsRunning(false);
+        playSound();
+        setMode(mode === "work" ? "break" : "work");
+        setTimeLeft((mode === "work" ? breakTime : workTime) * 60);
       }
-    }
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    }, 1000);
+    return () => clearTimeout(timer);
   }, [isRunning, timeLeft, mode, workTime, breakTime]);
 
-  const toggleTimer = () => setIsRunning(!isRunning);
+  const toggleTimer = () => setIsRunning(running => !running);
 
   const resetTimer = () => {
     setIsRunning(false);
@@ -89,14 +86,14 @@ export default function Pomodoro() {
           <div className="flex gap-4">
             <div className="flex-1">
               <label className="text-xs text-slate-500 mb-1 block">دقیقه تمرکز</label>
-              <input type="number" value={workTime} onChange={(e) => setWorkTime(Number(e.target.value))} className="w-full rounded-lg bg-black/20 p-2 text-sm text-[var(--text-main)] outline-none" />
+              <input type="number" min={1} max={180} value={workTime} onChange={(e) => setWorkTime(Number(e.target.value))} className="w-full rounded-lg bg-black/20 p-2 text-sm text-[var(--text-main)] outline-none" />
             </div>
             <div className="flex-1">
               <label className="text-xs text-slate-500 mb-1 block">دقیقه استراحت</label>
-              <input type="number" value={breakTime} onChange={(e) => setBreakTime(Number(e.target.value))} className="w-full rounded-lg bg-black/20 p-2 text-sm text-[var(--text-main)] outline-none" />
+              <input type="number" min={1} max={180} value={breakTime} onChange={(e) => setBreakTime(Number(e.target.value))} className="w-full rounded-lg bg-black/20 p-2 text-sm text-[var(--text-main)] outline-none" />
             </div>
           </div>
-          <button onClick={applySettings} className="w-full rounded-lg bg-violet-500 py-2 text-sm font-bold text-white hover:bg-violet-600">ذخیره</button>
+          <button onClick={applySettings} disabled={[workTime, breakTime].some(value => !Number.isInteger(value) || value < 1 || value > 180)} className="w-full rounded-lg bg-violet-500 py-2 text-sm font-bold text-white hover:bg-violet-600 disabled:opacity-50">ذخیره</button>
         </div>
       )}
 

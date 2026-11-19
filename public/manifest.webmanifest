@@ -1,7 +1,9 @@
 {
   "name": "TOOLINTO | ابزارهای کوچک و کاربردی",
   "short_name": "TOOLINTO",
-  "description": "مجموعه ابزارهای کوچک و رایگان: کوتاه‌کننده لینک، سازنده QR کد، تبدیل تاریخ، محاسبه BMI و ۱۰ ابزار کاربردی دیگر.",
+  "description": "مجموعه ابزارهای کوچک و رایگان برای کارهای روزمره",
+  "lang": "fa",
+  "dir": "rtl",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#09090b",

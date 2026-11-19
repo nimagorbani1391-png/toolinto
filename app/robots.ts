@@ -1,12 +1,13 @@
 import { MetadataRoute } from 'next'
+import { siteOrigin } from '../lib/site'
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/api/'], // به ربات‌ها می‌گیم به APIها کاری نداشته باشن
+      disallow: ['/api/', '/dashboard', '/owner'],
     },
-    sitemap: 'https://toolinto.netlify.app/sitemap.xml',
+    sitemap: `${siteOrigin()}/sitemap.xml`,
   }
 }

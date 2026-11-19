@@ -14,10 +14,11 @@ export default function TypingTest() {
   const [userInput, setUserInput] = useState("");
   const [timeLeft, setTimeLeft] = useState(30);
   const [isActive, setIsActive] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
-  const [score, setScore] = useState(0);
-  const [errors, setErrors] = useState(0);
-  const [wpm, setWpm] = useState(0);
+  const [deadline, setDeadline] = useState(0);
+  const isFinished = deadline > 0 && timeLeft === 0;
+  const errors = isFinished ? userInput.split("").filter((char, i) => char !== text[i]).length : 0;
+  const wpm = isFinished ? Math.round(userInput.length / 2.5) : 0;
+  const score = isFinished && text.length ? Math.round(100 * (userInput.length - errors) / text.length) : 0;
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -27,50 +28,25 @@ export default function TypingTest() {
     setUserInput("");
     setTimeLeft(30);
     setIsActive(true);
-    setIsFinished(false);
-    setScore(0);
-    setErrors(0);
-    setWpm(0);
+    setDeadline(Date.now() + 30_000);
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isActive && timeLeft > 0) {
-      interval = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-    } else if (timeLeft === 0 && isActive) {
-      finishTest();
-    }
+    if (!isActive) return;
+    const interval = setInterval(() => {
+      const remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      if (!remaining) setIsActive(false);
+    }, 200);
     return () => clearInterval(interval);
-  }, [isActive, timeLeft]);
+  }, [deadline, isActive]);
 
   const handleTyping = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!isActive || isFinished) return;
     const value = e.target.value;
     if (value.length > text.length) return;
     setUserInput(value);
-  };
-
-  const finishTest = () => {
-    setIsActive(false);
-    setIsFinished(true);
-
-    let correctChars = 0;
-    let errorCount = 0;
-
-    for (let i = 0; i < userInput.length; i++) {
-      if (userInput[i] === text[i]) correctChars++;
-      else errorCount++;
-    }
-
-    setErrors(errorCount);
-
-    const wordsTyped = userInput.length / 5;
-    const minutes = 30 / 60;
-    setWpm(Math.round(wordsTyped / minutes));
-
-    const rawScore = (correctChars / text.length) * 100;
-    setScore(Math.round(rawScore));
   };
 
   return (

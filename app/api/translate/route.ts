@@ -1,27 +1,25 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import { translationInput } from "../../../lib/validation";
 
 export async function POST(req: Request) {
+  const input = translationInput(await req.json().catch(() => null));
+  if (!input) {
+    return NextResponse.json({ error: "زبان نامعتبر است یا متن بیش از ۱۰۰۰ نویسه است." }, { status: 400 });
+  }
+  const params = new URLSearchParams({ client: "gtx", sl: input.from, tl: input.to, dt: "t", q: input.text });
   try {
-    const { text, from, to } = await req.json();
-
-    if (!text || !text.trim()) {
-      return NextResponse.json({ error: 'متنی برای ترجمه وارد نشده است.' }, { status: 400 });
-    }
-
-    // استفاده از API غیررسمی گوگل ترنسلیت (رایگان و بدون کلید)
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
-    
-    const response = await fetch(url);
-    const data = await response.json();
-
-    // ساختار خروجی گوگل یک آرایه پیچیده است، اینطوری متن نهایی رو درمیاریم
-    if (data && data[0]) {
-      const translatedText = data[0].map((item: any) => item[0]).join('');
-      return NextResponse.json({ translatedText });
-    } else {
-      return NextResponse.json({ error: 'خطا در ترجمه متن.' }, { status: 500 });
-    }
-  } catch (error) {
-    return NextResponse.json({ error: 'خطای سرور در ارتباط با سرویس ترجمه.' }, { status: 500 });
+    const response = await fetch(`https://translate.googleapis.com/translate_a/single?${params}`, {
+      signal: AbortSignal.timeout(8000), cache: "no-store",
+    });
+    if (!response.ok) throw new Error("Translation service unavailable");
+    const data: unknown = await response.json();
+    if (!Array.isArray(data) || !Array.isArray(data[0])) throw new Error("Invalid translation");
+    const translatedText = data[0].flatMap((item: unknown) =>
+      Array.isArray(item) && typeof item[0] === "string" ? [item[0]] : [],
+    ).join("");
+    if (!translatedText) throw new Error("Empty translation");
+    return NextResponse.json({ translatedText });
+  } catch {
+    return NextResponse.json({ error: "سرویس ترجمه پاسخ نداد. دوباره تلاش کنید." }, { status: 502 });
   }
 }

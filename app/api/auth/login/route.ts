@@ -1,15 +1,18 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import bcrypt from 'bcryptjs';
-import { SignJWT } from 'jose';
-
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'toolinto-super-secret-key-123');
+import { createSession, SESSION_AGE, SESSION_COOKIE, sessionCookieOptions } from '../../../../lib/auth';
+import { isRecord, validEmail, validPassword } from '../../../../lib/validation';
 
 export async function POST(req: Request) {
   try {
-    const { email, password } = await req.json();
+    const input: unknown = await req.json().catch(() => null);
+    if (!isRecord(input) || !validEmail(input.email) || !validPassword(input.password)) {
+      return NextResponse.json({ error: 'ایمیل یا رمز عبور نامعتبر است.' }, { status: 400 });
+    }
+    const { email, password } = input;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { email }, select: { id: true, name: true, password: true } });
     if (!user) {
       return NextResponse.json({ error: 'ایمیل یا رمز عبور اشتباه است.' }, { status: 401 });
     }
@@ -19,23 +22,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'ایمیل یا رمز عبور اشتباه است.' }, { status: 401 });
     }
 
-    const token = await new SignJWT({ userId: user.id, name: user.name })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setIssuedAt()
-      .setExpirationTime('7d')
-      .sign(JWT_SECRET);
+    const token = await createSession(user.id);
 
     const response = NextResponse.json({ message: 'ورود موفقیت‌آمیز بود.', name: user.name }, { status: 200 });
-    response.cookies.set('auth_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-    });
+    response.cookies.set(SESSION_COOKIE, token, { ...sessionCookieOptions, maxAge: SESSION_AGE });
 
     return response;
   } catch (error) {
+    console.error('Login failed', error);
     return NextResponse.json({ error: 'خطای سرور در ورود.' }, { status: 500 });
   }
 }

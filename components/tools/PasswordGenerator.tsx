@@ -62,7 +62,9 @@ export default function PasswordGenerator() {
   }, [length, options]);
 
   useEffect(() => {
-    generate();
+    // Generate only in the browser, without presenting a server-generated password.
+    const frame = requestAnimationFrame(generate);
+    return () => cancelAnimationFrame(frame);
   }, [generate]);
 
   // محاسبه قدرت رمز عبور
@@ -71,7 +73,7 @@ export default function PasswordGenerator() {
     if (options.lower) poolSize += 26;
     if (options.upper) poolSize += 26;
     if (options.digits) poolSize += 10;
-    if (options.symbols) poolSize += 30;
+    if (options.symbols) poolSize += CHARSETS.symbols.length;
 
     if (poolSize === 0) return { label: "هیچ", color: "bg-gray-500", width: "0%" };
 

@@ -87,6 +87,7 @@ export default function ColorPicker() {
       ) : (
         <div className="space-y-4">
           <div className="overflow-hidden rounded-xl border border-[var(--glass-border)] bg-black/50 text-center">
+            {/* eslint-disable-next-line @next/next/no-img-element -- Local preview is sampled by the canvas. */}
             <img
               src={imageSrc}
               alt="Uploaded"
