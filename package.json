@@ -47,5 +47,5 @@
     "tsx": "^4.21.0",
     "typescript": "^5"
   },
-  "overrides": { "postcss": "$postcss" }
+  "overrides": { "postcss": "$postcss", "source-map-js": "1.2.2" }
 }
