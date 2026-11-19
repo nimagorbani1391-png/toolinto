@@ -1,0 +1,48 @@
+name: Toolinto CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: toolinto
+          POSTGRES_PASSWORD: localtest
+          POSTGRES_DB: toolinto_test
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U toolinto -d toolinto_test"
+          --health-interval 5s --health-timeout 4s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://toolinto:localtest@127.0.0.1:5432/toolinto_test
+      JWT_SECRET: local-only-dummy-secret-that-is-not-used-for-production
+      ADMIN_USER_ID: toolinto_ci_admin
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run db:deploy
+      - run: npm run build
+      - name: Verify API against test PostgreSQL
+        run: |
+          npm start -- --hostname 127.0.0.1 --port 3010 > "$RUNNER_TEMP/toolinto-server.log" 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true; cat "$RUNNER_TEMP/toolinto-server.log"' EXIT
+          curl --fail --silent --show-error --retry 30 --retry-connrefused --retry-delay 1 http://127.0.0.1:3010/ -o /dev/null
+          npm run test:smoke

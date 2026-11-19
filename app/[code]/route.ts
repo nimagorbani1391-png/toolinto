@@ -14,16 +14,26 @@ export async function GET(
     return NextResponse.redirect(new URL("/", _req.url));
   }
 
-  const link = await prisma.link.findUnique({ where: { shortCode: code } });
-  if (!link) {
+  const link = await prisma.link.findUnique({
+    where: { shortCode: code }, select: { originalUrl: true },
+  });
+  if (!link) return NextResponse.redirect(new URL("/", _req.url));
+  let destination: URL;
+  try {
+    destination = new URL(link.originalUrl);
+    if (!["http:", "https:"].includes(destination.protocol) || destination.username || destination.password) {
+      return NextResponse.redirect(new URL("/", _req.url));
+    }
+  } catch {
     return NextResponse.redirect(new URL("/", _req.url));
   }
 
-  // آپدیت کردن تعداد کلیک‌ها (ویژه VIP)
-  await prisma.link.update({
-    where: { shortCode: code },
-    data: { clicks: { increment: 1 } },
-  });
-
-  return NextResponse.redirect(link.originalUrl, 302);
+  try {
+    await prisma.link.update({
+      where: { shortCode: code }, data: { clicks: { increment: 1 } }, select: { id: true },
+    });
+  } catch (error) {
+    console.error("Click counter update failed", error);
+  }
+  return NextResponse.redirect(destination, 302);
 }

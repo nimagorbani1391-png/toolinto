@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { RotateCcw, Trophy, MousePointerClick } from "lucide-react";
 
 const EMOJIS = ["🍎", "🍌", "🍇", "🍉", "🍓", "🍒", "🍑", "🥝"];
@@ -18,10 +18,12 @@ export default function MemoryTest() {
   const [moves, setMoves] = useState(0);
   const [matches, setMatches] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
-  const [isWon, setIsWon] = useState(false);
+  const pending = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isWon = matches === EMOJIS.length;
 
   // تابع شروع بازی و قاطی کردن رندوم کارت‌ها
   const startGame = () => {
+    if (pending.current) clearTimeout(pending.current);
     // کپی کردن ایموجی‌ها برای ساخت جفت‌ها
     const deck = [...EMOJIS, ...EMOJIS];
     
@@ -43,54 +45,35 @@ export default function MemoryTest() {
     setMoves(0);
     setMatches(0);
     setIsLocked(false);
-    setIsWon(false);
   };
 
-  // شروع بازی در اولین بارگذاری
-  useEffect(() => {
-    startGame();
-  }, []);
-
-  // چک کردن برد
-  useEffect(() => {
-    if (matches > 0 && matches === EMOJIS.length) {
-      setIsWon(true);
-    }
-  }, [matches]);
+  useEffect(() => () => { if (pending.current) clearTimeout(pending.current); }, []);
 
   const handleCardClick = (index: number) => {
     if (isLocked || cards[index].isFlipped || cards[index].isMatched) return;
 
-    const newCards = [...cards];
-    newCards[index].isFlipped = true;
-    setCards(newCards);
+    setCards(current => current.map((card, i) => i === index ? { ...card, isFlipped: true } : card));
 
     if (flippedIndices.length === 1) {
       const firstIndex = flippedIndices[0];
       setFlippedIndices([firstIndex, index]);
       setIsLocked(true);
+      setMoves(prev => prev + 1);
 
       if (cards[firstIndex].icon === cards[index].icon) {
         // اگر جفت بودند
-        setTimeout(() => {
-          const matchedCards = [...cards];
-          matchedCards[firstIndex].isMatched = true;
-          matchedCards[index].isMatched = true;
-          setCards(matchedCards);
+        pending.current = setTimeout(() => {
+          setCards(current => current.map((card, i) => i === firstIndex || i === index ? { ...card, isMatched: true } : card));
           setFlippedIndices([]);
           setIsLocked(false);
           setMatches((prev) => prev + 1);
         }, 500);
       } else {
         // اگر جفت نبودند
-        setTimeout(() => {
-          const resetCards = [...cards];
-          resetCards[firstIndex].isFlipped = false;
-          resetCards[index].isFlipped = false;
-          setCards(resetCards);
+        pending.current = setTimeout(() => {
+          setCards(current => current.map((card, i) => i === firstIndex || i === index ? { ...card, isFlipped: false } : card));
           setFlippedIndices([]);
           setIsLocked(false);
-          setMoves((prev) => prev + 1);
         }, 1000);
       }
     } else {
@@ -111,7 +94,7 @@ export default function MemoryTest() {
           className="flex items-center gap-2 rounded-xl bg-violet-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-violet-600"
         >
           <RotateCcw className="h-4 w-4" />
-          شروع مجدد
+          {cards.length ? "شروع مجدد" : "شروع بازی"}
         </button>
         <div className="text-center">
           <p className="text-xs text-slate-500">جفت‌ها</p>

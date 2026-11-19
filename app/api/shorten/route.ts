@@ -1,66 +1,38 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
+import { getSessionUserId } from "../../../lib/auth";
 import { prisma } from "../../../lib/prisma";
 import { generateShortCode } from "../../../lib/shortcode";
-import { cookies } from "next/headers";
-import { jwtVerify } from "jose";
+import { isRecord, normalizeUrl } from "../../../lib/validation";
 
 export const runtime = "nodejs";
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'toolinto-super-secret-key-123');
-
-function fail(message: string, status: number) {
-  return NextResponse.json({ error: message }, { status });
-}
-
-function normalizeUrl(input: string): string | null {
-  let value = input.trim();
-  if (!value || value.length > 2048) return null;
-  if (!/^https?:\/\//i.test(value)) {
-    if (/^[a-z][a-z0-9+.-]*:\/\//i.test(value)) return null;
-    value = `https://${value}`;
-  }
-  try {
-    const url = new URL(value);
-    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
-    if (url.username || url.password) return null;
-    if (!url.hostname.includes(".")) return null;
-    return url.toString();
-  } catch { return null; }
-}
 
 export async function POST(req: Request) {
-  let body: any;
-  try { body = await req.json(); } catch { return fail("درخواست نامعتبر است.", 400); }
-
-  const originalUrl = normalizeUrl(body.url);
-  if (!originalUrl) return fail("لینک معتبر نیست. مثال: https://example.com", 400);
-
-  let userId: string | null = null;
+  const input: unknown = await req.json().catch(() => null);
+  const originalUrl = isRecord(input) ? normalizeUrl(input.url) : null;
+  if (!originalUrl) return NextResponse.json({ error: "لینک معتبر نیست." }, { status: 400 });
 
   try {
-    const token = cookies().get('auth_token')?.value;
-    if (token) {
-      const { payload } = await jwtVerify(token, JWT_SECRET);
-      userId = payload.userId as string;
+    const userId = await getSessionUserId();
+    for (let attempt = 0; attempt < 5; attempt++) {
+      try {
+        const link = await prisma.link.create({
+          data: { originalUrl, shortCode: generateShortCode(), userId },
+          select: { id: true, originalUrl: true, shortCode: true, clicks: true, createdAt: true },
+        });
+        return NextResponse.json(link, { status: 201 });
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === "P2002") continue;
+          if (error.code === "P2003") {
+            return NextResponse.json({ error: "حساب یافت نشد. دوباره وارد شوید." }, { status: 401 });
+          }
+        }
+        throw error;
+      }
     }
-  } catch (e) {
-    console.error("JWT Verification Error:", e);
+  } catch (error) {
+    console.error("Short link creation failed", error);
   }
-
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const shortCode = generateShortCode();
-    try {
-      const link = await prisma.link.create({
-        data: { originalUrl, shortCode, userId: userId || undefined },
-      });
-      return NextResponse.json(link, { status: 201 });
-    } catch (e: any) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") continue;
-      
-      // این خط رو اضافه کردم تا خطای واقعی رو توی صفحه ببینی
-      console.error("Shortener Error:", e);
-      return NextResponse.json({ error: `خطای دیتابیس: ${e.message}` }, { status: 500 });
-    }
-  }
-  return fail("ساخت لینک ناموفق بود.", 500);
+  return NextResponse.json({ error: "ساخت لینک ناموفق بود." }, { status: 500 });
 }

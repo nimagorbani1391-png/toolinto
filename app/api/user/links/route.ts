@@ -1,23 +1,18 @@
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { jwtVerify } from 'jose';
-import { prisma } from '../../../../lib/prisma';
-
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'toolinto-super-secret-key-123');
+import { NextResponse } from "next/server";
+import { getSessionUserId } from "../../../../lib/auth";
+import { prisma } from "../../../../lib/prisma";
 
 export async function GET() {
   try {
-    const token = (await cookies()).get('auth_token')?.value;
-    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const userId = await getSessionUserId();
+    if (!userId) return NextResponse.json({ error: "ابتدا وارد حساب شوید." }, { status: 401 });
     const links = await prisma.link.findMany({
-      where: { userId: payload.userId as string },
-      orderBy: { createdAt: 'desc' },
+      where: { userId }, orderBy: { createdAt: "desc" },
+      select: { id: true, originalUrl: true, shortCode: true, clicks: true, createdAt: true },
     });
-
-    return NextResponse.json({ links });
+    return NextResponse.json({ links }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    console.error("Link history lookup failed", error);
+    return NextResponse.json({ error: "دریافت لینک‌ها ناموفق بود." }, { status: 500 });
   }
 }

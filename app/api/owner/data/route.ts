@@ -1,24 +1,17 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '../../../../lib/prisma';
+import { NextResponse } from "next/server";
+import { getAdminId } from "../../../../lib/auth";
+import { prisma } from "../../../../lib/prisma";
 
-export async function POST(req: Request) {
+export async function GET() {
   try {
-    const { name, year, password } = await req.json();
-
-    // چک کردن اطلاعات محرمانه مالک
-    if (name !== "نیما قربانی" || year !== "1391" || password !== "🦾&💪🏻") {
-      return NextResponse.json({ error: 'دسترسی غیرمجاز! اطلاعات اشتباه است.' }, { status: 401 });
-    }
-
-    // اگر درست بود، اطلاعات رو بده
+    if (!(await getAdminId())) return NextResponse.json({ error: "دسترسی غیرمجاز است." }, { status: 403 });
     const users = await prisma.user.findMany({
-      orderBy: { createdAt: 'desc' },
+      select: { id: true, name: true, email: true, createdAt: true, isVip: true },
+      orderBy: { createdAt: "desc" },
     });
-
-    const vips = users.filter((user) => user.isVip);
-
-    return NextResponse.json({ users, vips }, { status: 200 });
+    return NextResponse.json({ users }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
-    return NextResponse.json({ error: 'خطای سرور.' }, { status: 500 });
+    console.error("Admin user lookup failed", error);
+    return NextResponse.json({ error: "خطای سرور." }, { status: 500 });
   }
 }

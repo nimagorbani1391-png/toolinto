@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useState } from "react";
+import type { Worker } from "tesseract.js";
 import { UploadCloud, Loader2, ScanText, Copy, Check } from "lucide-react";
 
 export default function OcrTool() {
@@ -12,6 +13,8 @@ export default function OcrTool() {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
   const [lang, setLang] = useState("fas+eng");
+
+  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -26,14 +29,16 @@ export default function OcrTool() {
   const extractText = async () => {
     if (!image) return;
     setIsLoading(true);
+    setProgress(0);
     setError("");
     setText("");
 
+    let worker: Worker | undefined;
     try {
       // ایمپورت داینامیک برای جلوگیری از سنگین شدن لود اولیه
       const { createWorker } = await import("tesseract.js");
       
-      const worker = await createWorker(lang, 1, {
+      worker = await createWorker(lang, 1, {
         logger: (m) => {
           if (m.status === "recognizing text") {
             setProgress(Math.round(m.progress * 100));
@@ -43,19 +48,23 @@ export default function OcrTool() {
 
       const ret = await worker.recognize(image);
       setText(ret.data.text);
-      await worker.terminate();
     } catch (err) {
       setError("خطایی در پردازش عکس رخ داد. لطفاً دوباره تلاش کنید.");
     } finally {
+      await worker?.terminate().catch(() => undefined);
       setIsLoading(false);
     }
   };
 
-  const copyText = () => {
+  const copyText = async () => {
     if (!text) return;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError("کپی انجام نشد. متن را دستی انتخاب و کپی کنید.");
+    }
   };
 
   return (
@@ -77,12 +86,14 @@ export default function OcrTool() {
         <div className="space-y-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-3 flex-1 overflow-hidden">
-               <img src={preview} alt="Preview" className="h-12 w-12 rounded object-cover" />
+               {/* eslint-disable-next-line @next/next/no-img-element -- Preview uses a browser-only object URL. */}
+               <img src={preview} alt="پیش‌نمایش عکس" className="h-12 w-12 rounded object-cover" />
                <span className="text-sm font-bold text-[var(--text-main)] truncate">{image?.name}</span>
             </div>
             
             <select 
-              value={lang} 
+              value={lang}
+              disabled={isLoading}
               onChange={(e) => setLang(e.target.value)}
               className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-3 text-sm font-bold text-[var(--text-main)] outline-none"
             >
@@ -94,7 +105,8 @@ export default function OcrTool() {
 
           <div className="flex gap-2">
             <button
-              onClick={() => { setPreview(null); setText(""); }}
+              disabled={isLoading}
+              onClick={() => { setImage(null); setPreview(null); setText(""); }}
               className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] px-4 py-3 font-bold text-[var(--text-main)] transition hover:bg-white/10"
             >
               عکس دیگر

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { UploadCloud, Download, Loader2, Image as ImageIcon } from "lucide-react";
 
 export default function ImageConverter() {
@@ -10,6 +10,8 @@ export default function ImageConverter() {
   const [isConverting, setIsConverting] = useState(false);
   const [error, setError] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => () => { if (convertedUrl) URL.revokeObjectURL(convertedUrl); }, [convertedUrl]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
@@ -33,10 +35,15 @@ export default function ImageConverter() {
     const objectUrl = URL.createObjectURL(file);
     
     img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+      if (!ctx) {
+        setError("مرورگر از تبدیل عکس پشتیبانی نمی‌کند.");
+        setIsConverting(false);
+        return;
+      }
 
       canvas.width = img.width;
       canvas.height = img.height;
@@ -50,13 +57,12 @@ export default function ImageConverter() {
 
       canvas.toBlob(
         (blob) => {
-          if (blob) {
+          if (blob?.type === targetFormat && canvasRef.current) {
             setConvertedUrl(URL.createObjectURL(blob));
           } else {
             setError("خطایی در تبدیل عکس رخ داد.");
           }
           setIsConverting(false);
-          URL.revokeObjectURL(objectUrl);
         },
         targetFormat,
         0.9
@@ -86,6 +92,7 @@ export default function ImageConverter() {
         <input
           type="file"
           accept="image/*"
+          disabled={isConverting}
           onChange={handleFileChange}
           className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
         />

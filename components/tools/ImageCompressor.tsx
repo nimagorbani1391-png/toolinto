@@ -10,6 +10,16 @@ export default function ImageCompressor() {
   const [isCompressing, setIsCompressing] = useState(false);
   const [error, setError] = useState("");
 
+  function downloadImage() {
+    if (!compressedFile) return;
+    const url = URL.createObjectURL(compressedFile);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `compressed-${compressedFile.name}`;
+    anchor.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -65,6 +75,7 @@ export default function ImageCompressor() {
         <input
           type="file"
           accept="image/*"
+          disabled={isCompressing}
           onChange={handleFileChange}
           className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
         />
@@ -119,17 +130,17 @@ export default function ImageCompressor() {
             <p className="text-sm text-slate-500 dark:text-slate-300">حجم جدید</p>
             <p className="text-xl font-black text-green-500">{formatSize(compressedFile.size)}</p>
             <p className="text-xs text-slate-500">
-              کاهش حجم: {formatSize(originalFile!.size - compressedFile.size)}
+              کاهش حجم: {formatSize(Math.max(0, (originalFile?.size ?? 0) - compressedFile.size))}
             </p>
           </div>
-          <a
-            href={URL.createObjectURL(compressedFile)}
-            download={`compressed-${originalFile?.name}`}
+          <button
+            type="button"
+            onClick={downloadImage}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-5 py-3 font-bold text-white transition hover:bg-green-700"
           >
             <Download className="h-5 w-5" />
             دانلود عکس فشرده شده
-          </a>
+          </button>
         </div>
       )}
     </div>
